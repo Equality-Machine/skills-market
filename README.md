@@ -5,6 +5,9 @@
 An open marketplace for **Claude Code & Codex CLI skills** — git-backed,
 one-line install, one-line publish.
 
+> Looking for runnable examples for every CLI feature? See
+> [**EXAMPLES.md**](EXAMPLES.md).
+
 ## Install (one line)
 
 ```bash

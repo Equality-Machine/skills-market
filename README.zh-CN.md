@@ -5,6 +5,9 @@
 一个开放的 **Claude Code & Codex CLI skills 市场** —— 以 git 为后端，
 一行命令安装，一行命令发布。
 
+> 想看每个 CLI 功能点的可执行示例？见
+> [**EXAMPLES.zh-CN.md**](EXAMPLES.zh-CN.md)。
+
 ## 安装（一行）
 
 ```bash
