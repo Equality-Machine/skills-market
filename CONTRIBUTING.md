@@ -1,5 +1,7 @@
 # Contributing to skills-market
 
+[English](CONTRIBUTING.md) · [简体中文](CONTRIBUTING.zh-CN.md)
+
 Thanks for adding a skill. The whole flow is one PR: a new directory under
 [`skills/`](skills/) plus a regenerated `registry/skills.json`.
 

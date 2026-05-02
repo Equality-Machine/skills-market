@@ -1,18 +1,42 @@
 {
   "name": "skills-market",
   "version": "0.1.0",
-  "description": "Claude Code skills marketplace — install, sync, and mirror community skills.",
+  "description": "Claude Code skills marketplace — install, sync, and mirror community skills via git.",
   "type": "module",
+  "license": "MIT",
+  "author": "Vincent Cheng <nx_meteor@163.com>",
+  "homepage": "https://github.com/Mel0day/skills-market#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mel0day/skills-market.git",
+    "directory": "packages/installer"
+  },
+  "bugs": {
+    "url": "https://github.com/Mel0day/skills-market/issues"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "skills",
+    "marketplace",
+    "installer",
+    "anthropic",
+    "mcp"
+  ],
   "bin": {
     "skills-market": "./dist/cli.js"
   },
-  "files": ["dist"],
+  "files": ["dist", "README.md"],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev": "tsc -p tsconfig.json --watch"
-  },
-  "dependencies": {
-    "@skills-market/registry": "*"
+    "dev": "tsc -p tsconfig.json --watch",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
