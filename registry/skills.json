@@ -7,7 +7,7 @@
     "name": "Vincent Cheng",
     "email": "nx_meteor@163.com"
   },
-  "updatedAt": "2026-05-02T14:58:31.975Z",
+  "updatedAt": "2026-05-02T15:05:28.934Z",
   "skills": [
     {
       "id": "design-critic",
@@ -40,6 +40,36 @@
       "homepage": "https://github.com/Equality-Machine/skills-market",
       "license": "Apache-2.0",
       "createdAt": "2026-03-15T00:00:00Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "direct-push-proof",
+      "name": "direct-push-proof",
+      "displayName": "direct-push-proof",
+      "description": "Throwaway skill that proves `skills-market publish` now lands directly on main without a PR. Will be reverted right after.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Mel0day",
+        "email": "nx_meteor@163.com"
+      },
+      "category": "other",
+      "tags": [],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/direct-push-proof",
+        "command": "npx -y skills-market install direct-push-proof"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/direct-push-proof"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-02T15:05:28.934Z",
       "downloads": 0,
       "verified": false
     },
