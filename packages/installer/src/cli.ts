@@ -121,9 +121,14 @@ Commands:
   remove <id>           Uninstall a skill (from every recorded target)
   sync                  Reinstall every skill in the personal manifest
   init <id>             Scaffold a new skill folder (skill.json + SKILL.md)
-  publish <path>        One-shot PR a skill back upstream. <path> can be:
+  publish <path>        Publish a skill upstream. <path> can be:
                           - a directory containing SKILL.md (or just SKILL.md)
                           - a single .md file (auto-staged into a sibling dir)
+                        Default: try \`git push origin HEAD:main\` (maintainer
+                        fast-path, skill goes live immediately). On permission
+                        denied, falls back to fork + PR. Pass --pr to always
+                        go through the PR flow.
+
                         skill.json is auto-derived from frontmatter and flags
                         (--id --description --category --tags …) when missing.
   mirror init           Clone the marketplace repo into ~/.skills-market/mirror
@@ -817,6 +822,7 @@ interface PublishFlags {
   dir?: string;
   dryRun?: boolean;
   noPr?: boolean;
+  pr?: boolean;
   // skill.json fields — used only when skill.json is missing.
   id?: string;
   display?: string;
@@ -837,6 +843,7 @@ function parsePublishFlags(args: string[]): PublishFlags {
     if (a === "publish") continue;
     if (a === "--dry-run") f.dryRun = true;
     else if (a === "--no-pr") f.noPr = true;
+    else if (a === "--pr") f.pr = true;
     else if (a === "--id" && next) (f.id = next), i++;
     else if (a === "--display" && next) (f.display = next), i++;
     else if (a === "--description" && next) (f.description = next), i++;
@@ -1019,18 +1026,40 @@ async function cmdPublish(args: string[]): Promise<void> {
     }
 
     if (f.dryRun) {
-      console.log(`[skills-market] DRY RUN — would push and open PR`);
+      console.log(`[skills-market] DRY RUN — would push (target depends on permissions)`);
       console.log(`  Branch: ${branch}`);
       console.log(`  Repo:   ${repoFull}`);
       return;
     }
 
-    // 6. Try direct push (maintainer path), fall back to fork-and-push.
+    // 6. Choose how to publish:
+    //    a) Default: try to fast-forward origin/main directly. Maintainers see
+    //       the new skill go live immediately, no PR babysitting.
+    //    b) `--pr`: skip the direct push and always open a PR (useful for
+    //       changes you want reviewed even though you have write access).
+    //    c) Fallback (no write access OR direct push refused, e.g. branch
+    //       protection): push to a fork-or-origin branch and open a PR.
+    if (!f.pr) {
+      const tryDirect = await run("git", ["push", "origin", `HEAD:main`], scratch);
+      if (tryDirect.code === 0) {
+        const sha = (await run("git", ["rev-parse", "--short", "HEAD"], scratch)).stdout.trim();
+        console.log(`[skills-market] ✓ Pushed directly to origin/main`);
+        console.log(`https://github.com/${repoFull}/commit/${sha}`);
+        console.log(
+          `[skills-market] The skill is live. Anyone can install it now with: skills-market install ${meta.id}`
+        );
+        return;
+      }
+      // Common reasons: branch-protection rules, no write access, push hooks.
+      const reason = tryDirect.stderr.split("\n").find((l) => l.trim()) ?? `exit ${tryDirect.code}`;
+      console.log(`[skills-market] Direct push to main not allowed (${reason.trim()}). Falling back to PR flow.`);
+    }
+
     let pushTarget = "origin";
     let prHead = branch;
     r = await run("git", ["push", "--set-upstream", "origin", branch], scratch);
     if (r.code !== 0) {
-      console.log(`[skills-market] Direct push denied — forking ${repoFull}`);
+      console.log(`[skills-market] origin push denied — forking ${repoFull}`);
       const forkRes = await run("gh", ["repo", "fork", repoFull, "--clone=false", "--remote=true", "--remote-name=fork"], scratch);
       if (forkRes.code !== 0 && !/already exists/i.test(forkRes.stderr)) {
         console.error(`[skills-market] gh repo fork failed:\n${forkRes.stderr}`);
