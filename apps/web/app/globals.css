@@ -1,0 +1,89 @@
+:root {
+  --bg: #0b0d10;
+  --panel: #14181d;
+  --panel-2: #1a1f25;
+  --border: #232a32;
+  --text: #e7edf3;
+  --muted: #8b97a4;
+  --accent: #6ea8ff;
+  --accent-2: #b48cff;
+  --good: #5fd49a;
+}
+
+* { box-sizing: border-box; }
+html, body { padding: 0; margin: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--panel-2); padding: 12px 16px; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(20,24,29,0.95), rgba(11,13,16,0.85));
+  position: sticky; top: 0; backdrop-filter: blur(8px); z-index: 10;
+}
+.topbar .brand { font-weight: 700; font-size: 18px; color: var(--text); letter-spacing: 0.3px; }
+.topbar nav { display: flex; gap: 18px; }
+
+main { max-width: 1100px; margin: 32px auto; padding: 0 24px; }
+footer { max-width: 1100px; margin: 48px auto 24px; padding: 24px; border-top: 1px solid var(--border); color: var(--muted); }
+
+.hero { padding: 28px 0 8px; }
+.hero h1 { font-size: 32px; margin: 0 0 8px; letter-spacing: -0.4px; }
+.hero p { color: var(--muted); margin: 0; max-width: 720px; }
+
+.search { margin: 24px 0 8px; display: flex; gap: 12px; flex-wrap: wrap; }
+.search input {
+  flex: 1; min-width: 260px;
+  padding: 10px 14px; border-radius: 10px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--border); outline: none;
+}
+.search input:focus { border-color: var(--accent); }
+
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.chip {
+  padding: 6px 10px; border-radius: 999px;
+  background: var(--panel); color: var(--muted);
+  border: 1px solid var(--border); font-size: 12px;
+  cursor: pointer; user-select: none;
+}
+.chip.active { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
+
+.grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  margin-top: 24px;
+}
+.card {
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--panel); padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.card .title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card .title h3 { margin: 0; font-size: 16px; }
+.card .title .verified { color: var(--good); font-size: 12px; }
+.card .desc { color: var(--muted); font-size: 14px; min-height: 42px; }
+.card .meta { color: var(--muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.card .meta .tag { background: var(--panel-2); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.card .install { font-size: 12px; }
+.card .install code { background: var(--panel-2); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); display: inline-block; }
+
+.detail { padding: 24px 0; }
+.detail h1 { margin: 0 0 8px; }
+.detail .lede { color: var(--muted); margin: 0 0 24px; max-width: 720px; }
+.detail .row { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+.detail .row > div { flex: 1; min-width: 220px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+.detail .install-block { margin-top: 12px; }
+.copy-btn { margin-left: 8px; cursor: pointer; padding: 4px 10px; border-radius: 6px; background: var(--accent); color: #0b0d10; border: none; font-size: 12px; }
+.copy-btn:hover { filter: brightness(1.1); }
+.back { display: inline-block; margin-bottom: 8px; color: var(--muted); }

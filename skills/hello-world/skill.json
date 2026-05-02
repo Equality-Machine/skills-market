@@ -1,0 +1,11 @@
+{
+  "id": "hello-world",
+  "displayName": "Hello World",
+  "description": "A friendly demo skill that introduces Claude Code and prints a greeting.",
+  "version": "0.1.0",
+  "author": { "name": "Vincent", "email": "vincent@example.com" },
+  "category": "demo",
+  "tags": ["beginner", "example"],
+  "license": "MIT",
+  "createdAt": "2026-05-01T00:00:00Z"
+}

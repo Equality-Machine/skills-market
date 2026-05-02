@@ -1,0 +1,12 @@
+{
+  "id": "git-helper",
+  "displayName": "Git Helper",
+  "description": "Smart git workflow helper that summarizes diffs, drafts conventional commit messages, and explains merge conflicts.",
+  "version": "0.2.1",
+  "author": { "name": "Mock Author", "email": "mock@example.com" },
+  "category": "development",
+  "tags": ["git", "productivity"],
+  "license": "MIT",
+  "homepage": "https://github.com/Mel0day/skills-market",
+  "createdAt": "2026-04-20T00:00:00Z"
+}

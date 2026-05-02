@@ -1,0 +1,24 @@
+{
+  "name": "skills-market",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An open marketplace for Claude Code skills, with a web catalog and an MCP server bridge.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run registry:build && npm run build --workspaces --if-present",
+    "dev:web": "npm run dev --workspace apps/web",
+    "dev:mcp": "npm run dev --workspace apps/mcp-server",
+    "build:registry-pkg": "npm run build --workspace packages/registry",
+    "build:mcp": "npm run build --workspace apps/mcp-server",
+    "build:web": "npm run build --workspace apps/web",
+    "registry:build": "node scripts/build-registry.mjs",
+    "registry:check": "node scripts/build-registry.mjs --check",
+    "registry:validate": "node scripts/validate-registry.mjs"
+  },
+  "engines": {
+    "node": ">=18.17"
+  }
+}

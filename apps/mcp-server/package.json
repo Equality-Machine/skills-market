@@ -1,0 +1,24 @@
+{
+  "name": "@skills-market/mcp-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP server bridging Claude Code @skills to the skills-market registry.",
+  "type": "module",
+  "bin": {
+    "skills-market-mcp": "./dist/server.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@skills-market/registry": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}

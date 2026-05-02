@@ -1,0 +1,11 @@
+{
+  "id": "translate-cn-en",
+  "displayName": "中英互译",
+  "description": "在 Claude Code 内提供中英互译，保留代码块、技术术语，和 Markdown 结构。",
+  "version": "0.3.0",
+  "author": { "name": "Vincent" },
+  "category": "writing",
+  "tags": ["translation", "i18n", "chinese"],
+  "license": "MIT",
+  "createdAt": "2026-04-05T00:00:00Z"
+}

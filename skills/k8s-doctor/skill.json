@@ -1,0 +1,12 @@
+{
+  "id": "k8s-doctor",
+  "displayName": "Kubernetes Doctor",
+  "description": "Diagnoses pod crashes, networking issues, and resource pressure across namespaces with redacted kubectl context.",
+  "version": "0.4.0",
+  "author": { "name": "Mock Author" },
+  "category": "devops",
+  "tags": ["kubernetes", "debugging", "ops"],
+  "license": "MIT",
+  "homepage": "https://github.com/Mel0day/skills-market",
+  "createdAt": "2026-02-10T00:00:00Z"
+}

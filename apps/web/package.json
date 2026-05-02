@@ -1,0 +1,25 @@
+{
+  "name": "@skills-market/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Web catalog for skills-market.",
+  "scripts": {
+    "predev": "node scripts/sync-public.mjs",
+    "prebuild": "node scripts/sync-public.mjs",
+    "dev": "next dev -p 4343",
+    "build": "next build",
+    "start": "next start -p 4343"
+  },
+  "dependencies": {
+    "@skills-market/registry": "*",
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.4.5"
+  }
+}

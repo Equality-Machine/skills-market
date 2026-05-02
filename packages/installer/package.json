@@ -1,0 +1,21 @@
+{
+  "name": "skills-market",
+  "version": "0.1.0",
+  "description": "Claude Code skills marketplace — install, sync, and mirror community skills.",
+  "type": "module",
+  "bin": {
+    "skills-market": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch"
+  },
+  "dependencies": {
+    "@skills-market/registry": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}
