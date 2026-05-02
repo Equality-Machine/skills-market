@@ -1,0 +1,12 @@
+{
+  "id": "regex-explainer",
+  "displayName": "Regex Explainer",
+  "description": "Breaks down regular expressions into plain-English, token by token, and flags common pitfalls like greedy quantifiers and unanchored patterns.",
+  "version": "0.1.0",
+  "author": { "name": "Lindsey", "email": "lindsey.hanglow@up.ac.th" },
+  "category": "development",
+  "tags": ["regex", "explain", "learning"],
+  "license": "MIT",
+  "homepage": "https://github.com/Mel0day/skills-market",
+  "createdAt": "2026-05-02T00:00:00Z"
+}
