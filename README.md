@@ -41,16 +41,27 @@ them — `~/.claude/skills/<id>/SKILL.md` for Claude Code,
 
 ## Publish your own skill
 
-If you already have a `SKILL.md`, that's all you need — `publish` will
-auto-derive `skill.json` from its frontmatter + flags:
+The simplest case — you've got a markdown file:
 
 ```bash
-# from a directory that already contains SKILL.md (e.g. ~/.claude/skills/<id>/)
-skills-market publish ~/.claude/skills/cool-skill --category development
-# → writes skill.json, validates, branches, pushes, opens PR
+skills-market publish ./awesome-tool.md --category development
 ```
 
-If you're starting from scratch, `init` is a convenience scaffolder:
+That's it. `publish` does the rest: stages the file into a sibling
+`./awesome-tool/` directory, auto-derives `skill.json` from frontmatter +
+your git config, runs the same schema validation CI runs, branches, pushes
+(or forks then pushes), opens the PR via `gh`.
+
+You can pass anything that resolves to a SKILL.md:
+
+```bash
+skills-market publish ./awesome-tool.md             # bare .md file
+skills-market publish ./awesome-tool/               # directory with SKILL.md
+skills-market publish ~/.claude/skills/awesome-tool # already-installed skill
+skills-market publish ~/.codex/skills/awesome-tool/SKILL.md
+```
+
+Starting from scratch and want a template? `init` is a convenience scaffolder:
 
 ```bash
 skills-market init my-skill            # scaffold ./my-skill/{skill.json, SKILL.md}

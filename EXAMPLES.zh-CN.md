@@ -264,65 +264,138 @@ Activate when ...
 
 ---
 
-## 11. publish — 直接对手写 SKILL.md 发布（无需先 init）
+## 11. 发布单个 `.md` 文件（无需 scaffold）
 
-最常见的场景：你已经有一个 `SKILL.md`（一般在 `~/.claude/skills/<id>/`）。
+这是最简单的发布路径 —— 你只要有一个 markdown 文件。
 
-### 11a. 缺 `--category` —— 友好报错
+### 11a. happy path
+
+`./awesome-tool.md`：
+
+```markdown
+---
+name: awesome-tool
+description: A simple tool that does awesome things; for the e2e test demo.
+---
+
+# Awesome Tool
+
+You are awesome.
+```
 
 ```bash
-$ skills-market publish ./raw-skill --dry-run
+$ skills-market publish ./awesome-tool.md --category development --dry-run
 ```
 
 ```text
-[skills-market] No skill.json found at /Users/you/work/raw-skill/skill.json. Auto-deriving from SKILL.md, but the following are still missing:
+[skills-market] Staged /Users/you/work/awesome-tool.md → /Users/you/work/awesome-tool/SKILL.md
+[skills-market] ✓ Wrote /Users/you/work/awesome-tool/skill.json (derived from SKILL.md + flags)
+[skills-market] Publishing skill "awesome-tool" v0.1.0
+[skills-market] From: /Users/you/work/awesome-tool
+[skills-market] Cloning https://github.com/Equality-Machine/skills-market.git → ~/.skills-market/publish/awesome-tool-…
+[skills-market] ✓ Registry validated
+[skills-market] DRY RUN — would push and open PR
+  Branch: skill/awesome-tool-…
+  Repo:   Equality-Machine/skills-market
+```
+
+刚才发生了什么：
+
+- 在 `.md` 文件同级建了 `./awesome-tool/` 目录
+- 原 `awesome-tool.md` **复制**（不改原文件）成 `./awesome-tool/SKILL.md`
+- `./awesome-tool/skill.json` 由 frontmatter（`name`、`description`）+
+  flag + `git config --global` 派生写出
+- 后续 publish 流程在这个 staging 目录上跑
+
+生成的 `skill.json`：
+
+```json
+{
+  "id": "awesome-tool",
+  "displayName": "awesome-tool",
+  "description": "A simple tool that does awesome things; for the e2e test demo.",
+  "version": "0.1.0",
+  "author": { "name": "Mel0day", "email": "nx_meteor@163.com" },
+  "category": "development",
+  "tags": [],
+  "license": "MIT",
+  "createdAt": "2026-05-02T13:02:…"
+}
+```
+
+### 11b. `.md` 没有 frontmatter —— 自动注入
+
+没写 YAML header 的纯 markdown 也能发布；CLI 会合成一份 frontmatter 写到
+staging 后的 `SKILL.md`。这种情况你需要传 `--description`（以及 `--category`）。
+
+`./no-fm.md`：
+
+```markdown
+# No Frontmatter Skill
+
+You are helpful when asked about no-frontmatter situations.
+```
+
+```bash
+$ skills-market publish ./no-fm.md \
+    --category development \
+    --description "Test skill that has no frontmatter; we inject one." \
+    --dry-run
+```
+
+```text
+[skills-market] Staged /Users/you/work/no-fm.md → /Users/you/work/no-fm/SKILL.md
+[skills-market] ✓ Wrote /Users/you/work/no-fm/skill.json (derived from SKILL.md + flags)
+[skills-market] Publishing skill "no-fm" v0.1.0
+…
+[skills-market] ✓ Registry validated
+[skills-market] DRY RUN — would push and open PR
+```
+
+staging 后的 SKILL.md（顶部插入了 frontmatter，正文不变）：
+
+```markdown
+---
+name: no-fm
+description: Test skill that has no frontmatter; we inject one.
+---
+
+# No Frontmatter Skill
+
+You are helpful when asked about no-frontmatter situations.
+```
+
+### 11c. 已经是目录格式 —— 直接传
+
+如果你的 `SKILL.md` 已经在某个目录里（最典型：`~/.claude/skills/<id>/`），
+传文件或目录都行：
+
+```bash
+skills-market publish ~/.claude/skills/cool-skill --category development
+skills-market publish ~/.codex/skills/cool-skill/SKILL.md --category development
+```
+
+两种写法都跳过 staging 步骤（不会建新目录）。
+
+### 11d. 缺 `--category` —— 友好报错
+
+```bash
+$ skills-market publish ./awesome-tool.md --dry-run
+```
+
+```text
+[skills-market] Staged ./awesome-tool.md → ./awesome-tool/SKILL.md
+[skills-market] No skill.json found at ./awesome-tool/skill.json. Auto-deriving from SKILL.md, but the following are still missing:
   - category (pass --category one of: demo, development, design, devops, writing, data, security, productivity, other)
 
 Flags supported: --id --display --description --category --version --author --email --license --tags
 ```
 
-### 11b. 加上 `--category` —— 成功
+`--category` 是唯一必填 flag（frontmatter 里通常没有，CLI 不瞎猜）。
 
-```bash
-$ skills-market publish ./raw-skill --category demo --tags "demo,raw" --dry-run
-```
+### 11e. 真发（去掉 `--dry-run`）
 
-```text
-[skills-market] ✓ Wrote /Users/you/work/raw-skill/skill.json (derived from SKILL.md + flags)
-[skills-market] Publishing skill "raw-demo" v0.1.0
-[skills-market] From: /Users/you/work/raw-skill
-[skills-market] Cloning https://github.com/Equality-Machine/skills-market.git → /Users/you/.skills-market/publish/raw-demo-moocq4z3
-[skills-market] ✓ Registry validated
-[skills-market] DRY RUN — would push and open PR
-  Branch: skill/raw-demo-moocq78e
-  Repo:   Equality-Machine/skills-market
-```
-
-自动生成（并写回源目录）的 `skill.json`：
-
-```json
-{
-  "id": "raw-demo",
-  "displayName": "raw-demo",
-  "description": "A skill written by hand without a skill.json. Demo only.",
-  "version": "0.1.0",
-  "author": {
-    "name": "Mel0day",
-    "email": "nx_meteor@163.com"
-  },
-  "category": "demo",
-  "tags": ["demo", "raw"],
-  "license": "MIT",
-  "createdAt": "2026-05-02T13:02:28.079Z"
-}
-```
-
-`id` / `description` 来自 `SKILL.md` frontmatter；`author` / `email` 来自
-`git config --global`；其他都是默认值或显式 flag。
-
-### 11c. 真发（去掉 `--dry-run`）
-
-不加 `--dry-run` 时，11b 之后会继续：
+去掉 `--dry-run` 后，11a 之后会继续：
 
 1. `git push --set-upstream origin <branch>` —— 你是 maintainer 时直接成功
 2. 权限不够时自动 `gh repo fork` 然后 push 到你 fork
@@ -418,7 +491,8 @@ skills-market search regex
 # 下载
 skills-market install hello-world regex-explainer
 
-# 发布自己的（已经有 SKILL.md 的情况）
+# 发布自己的 —— 单个 .md / 目录 / 已装好的 skill 都行
+skills-market publish ./my-tool.md --category development
 skills-market publish ~/.claude/skills/my-tool --category development
 
 # 跟上游

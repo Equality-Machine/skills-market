@@ -40,16 +40,26 @@ Claude Code 是 `~/.claude/skills/<id>/SKILL.md`，Codex CLI 是
 
 ## 发布你自己的 skill
 
-如果你已经写好了 `SKILL.md`，就可以直接 publish —— `skill.json` 会自动从
-frontmatter 和命令行 flag 派生：
+最简单的场景 —— 你只有一个 markdown 文件：
 
 ```bash
-# 直接对一个已存在的 SKILL.md 目录发布（例如 ~/.claude/skills/<id>/）
-skills-market publish ~/.claude/skills/cool-skill --category development
-# → 自动写入 skill.json，校验、建分支、push、开 PR
+skills-market publish ./awesome-tool.md --category development
 ```
 
-从零开始时 `init` 是便利 scaffold：
+就这一行。`publish` 帮你做剩下的：把 `.md` 文件 stage 到同级 `./awesome-tool/`
+目录，从 frontmatter + 你的 git config 自动派生 `skill.json`，跑和 CI 一样的
+schema 校验，建分支、push（或 fork 后 push）、用 `gh` 自动开 PR。
+
+`<path>` 可以是任何能找到 SKILL.md 的路径：
+
+```bash
+skills-market publish ./awesome-tool.md             # 单个 .md 文件
+skills-market publish ./awesome-tool/               # 含 SKILL.md 的目录
+skills-market publish ~/.claude/skills/awesome-tool # 已安装的 skill
+skills-market publish ~/.codex/skills/awesome-tool/SKILL.md
+```
+
+从零开始想要模板？`init` 是便利 scaffold：
 
 ```bash
 skills-market init my-skill            # 在 ./my-skill/ 生成 skill.json + SKILL.md

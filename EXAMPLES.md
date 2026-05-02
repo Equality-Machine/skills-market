@@ -274,65 +274,138 @@ Activate when ...
 
 ---
 
-## 11. Publish — from a hand-written `SKILL.md` (no `init` needed)
+## 11. Publish a single `.md` file (no scaffolding needed)
 
-This is the typical case: you already have a `SKILL.md` (often inside
-`~/.claude/skills/<id>/`).
+This is the simplest publish path — you literally only need a markdown file.
 
-### 11a. Missing `--category` → friendly error
+### 11a. The happy path
+
+`./awesome-tool.md`:
+
+```markdown
+---
+name: awesome-tool
+description: A simple tool that does awesome things; for the e2e test demo.
+---
+
+# Awesome Tool
+
+You are awesome.
+```
 
 ```bash
-$ skills-market publish ./raw-skill --dry-run
+$ skills-market publish ./awesome-tool.md --category development --dry-run
 ```
 
 ```text
-[skills-market] No skill.json found at /Users/you/work/raw-skill/skill.json. Auto-deriving from SKILL.md, but the following are still missing:
+[skills-market] Staged /Users/you/work/awesome-tool.md → /Users/you/work/awesome-tool/SKILL.md
+[skills-market] ✓ Wrote /Users/you/work/awesome-tool/skill.json (derived from SKILL.md + flags)
+[skills-market] Publishing skill "awesome-tool" v0.1.0
+[skills-market] From: /Users/you/work/awesome-tool
+[skills-market] Cloning https://github.com/Equality-Machine/skills-market.git → ~/.skills-market/publish/awesome-tool-…
+[skills-market] ✓ Registry validated
+[skills-market] DRY RUN — would push and open PR
+  Branch: skill/awesome-tool-…
+  Repo:   Equality-Machine/skills-market
+```
+
+What just happened:
+
+- A sibling directory `./awesome-tool/` was created next to your `.md` file.
+- The original `awesome-tool.md` was *copied* (untouched) to `./awesome-tool/SKILL.md`.
+- `./awesome-tool/skill.json` was generated from the frontmatter (`name`,
+  `description`) + your flags + `git config --global`.
+- The publish flow continued from that staging directory.
+
+The generated `skill.json`:
+
+```json
+{
+  "id": "awesome-tool",
+  "displayName": "awesome-tool",
+  "description": "A simple tool that does awesome things; for the e2e test demo.",
+  "version": "0.1.0",
+  "author": { "name": "Mel0day", "email": "nx_meteor@163.com" },
+  "category": "development",
+  "tags": [],
+  "license": "MIT",
+  "createdAt": "2026-05-02T13:02:…"
+}
+```
+
+### 11b. `.md` without frontmatter — auto-injected
+
+You can publish a plain markdown file with no YAML header. The CLI synthesizes
+frontmatter so the staged `SKILL.md` is well-formed; you just have to supply
+`--description` (and `--category`):
+
+`./no-fm.md`:
+
+```markdown
+# No Frontmatter Skill
+
+You are helpful when asked about no-frontmatter situations.
+```
+
+```bash
+$ skills-market publish ./no-fm.md \
+    --category development \
+    --description "Test skill that has no frontmatter; we inject one." \
+    --dry-run
+```
+
+```text
+[skills-market] Staged /Users/you/work/no-fm.md → /Users/you/work/no-fm/SKILL.md
+[skills-market] ✓ Wrote /Users/you/work/no-fm/skill.json (derived from SKILL.md + flags)
+[skills-market] Publishing skill "no-fm" v0.1.0
+…
+[skills-market] ✓ Registry validated
+[skills-market] DRY RUN — would push and open PR
+```
+
+The staged `SKILL.md` (frontmatter inserted at the top, body unchanged):
+
+```markdown
+---
+name: no-fm
+description: Test skill that has no frontmatter; we inject one.
+---
+
+# No Frontmatter Skill
+
+You are helpful when asked about no-frontmatter situations.
+```
+
+### 11c. Already-staged directory — pass it directly
+
+If you already have a `SKILL.md` inside a directory (very common for
+`~/.claude/skills/<id>/`), pass either the file or the directory:
+
+```bash
+skills-market publish ~/.claude/skills/cool-skill --category development
+skills-market publish ~/.codex/skills/cool-skill/SKILL.md --category development
+```
+
+Both forms skip the staging step (no new directory is created).
+
+### 11d. Missing `--category` → friendly error
+
+```bash
+$ skills-market publish ./awesome-tool.md --dry-run
+```
+
+```text
+[skills-market] Staged ./awesome-tool.md → ./awesome-tool/SKILL.md
+[skills-market] No skill.json found at ./awesome-tool/skill.json. Auto-deriving from SKILL.md, but the following are still missing:
   - category (pass --category one of: demo, development, design, devops, writing, data, security, productivity, other)
 
 Flags supported: --id --display --description --category --version --author --email --license --tags
 ```
 
-### 11b. With `--category` → success
+`--category` is the only required flag (frontmatter rarely contains it; we
+don't guess).
 
-```bash
-$ skills-market publish ./raw-skill --category demo --tags "demo,raw" --dry-run
-```
-
-```text
-[skills-market] ✓ Wrote /Users/you/work/raw-skill/skill.json (derived from SKILL.md + flags)
-[skills-market] Publishing skill "raw-demo" v0.1.0
-[skills-market] From: /Users/you/work/raw-skill
-[skills-market] Cloning https://github.com/Equality-Machine/skills-market.git → /Users/you/.skills-market/publish/raw-demo-moocq4z3
-[skills-market] ✓ Registry validated
-[skills-market] DRY RUN — would push and open PR
-  Branch: skill/raw-demo-moocq78e
-  Repo:   Equality-Machine/skills-market
-```
-
-The auto-generated `skill.json` (written back to the source dir):
-
-```json
-{
-  "id": "raw-demo",
-  "displayName": "raw-demo",
-  "description": "A skill written by hand without a skill.json. Demo only.",
-  "version": "0.1.0",
-  "author": {
-    "name": "Mel0day",
-    "email": "nx_meteor@163.com"
-  },
-  "category": "demo",
-  "tags": ["demo", "raw"],
-  "license": "MIT",
-  "createdAt": "2026-05-02T13:02:28.079Z"
-}
-```
-
-`id` and `description` came from the `SKILL.md` frontmatter; `author` and
-`email` came from `git config --global`; everything else is a default or the
-explicit flag.
-
-### 11c. Real publish (drop `--dry-run`)
+### 11e. Real publish (drop `--dry-run`)
 
 Without `--dry-run`, `publish` does the same flow then continues:
 
@@ -431,7 +504,8 @@ skills-market search regex
 # install
 skills-market install hello-world regex-explainer
 
-# publish your own (already have SKILL.md somewhere)
+# publish your own — bare .md, directory, or already-staged skill all work
+skills-market publish ./my-tool.md --category development
 skills-market publish ~/.claude/skills/my-tool --category development
 
 # stay current

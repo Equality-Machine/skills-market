@@ -10,13 +10,16 @@
 装好 CLI 之后（见 [README.zh-CN.md](README.zh-CN.md#安装一行)）：
 
 ```bash
-# 已经写好 SKILL.md？直接 publish：
-skills-market publish ./path/to/my-skill --category development
+# 有一个 markdown 文件？直接 publish：
+skills-market publish ./my-tool.md --category development
+
+# 有一个含 SKILL.md 的目录？同样的命令：
+skills-market publish ./my-tool --category development
 
 # 从零开始？init 先 scaffold 再 publish：
-skills-market init my-skill
-$EDITOR my-skill/SKILL.md
-skills-market publish my-skill
+skills-market init my-tool
+$EDITOR my-tool/SKILL.md
+skills-market publish my-tool
 ```
 
 `publish` 接受所有元数据 flag（`--id`、`--description`、`--category`、

@@ -121,10 +121,11 @@ Commands:
   remove <id>           Uninstall a skill (from every recorded target)
   sync                  Reinstall every skill in the personal manifest
   init <id>             Scaffold a new skill folder (skill.json + SKILL.md)
-  publish [<dir>]       One-shot PR a skill back upstream. <dir> only needs a
-                        SKILL.md — skill.json is auto-derived from frontmatter
-                        and flags (--id --description --category --tags …)
-                        if missing.
+  publish <path>        One-shot PR a skill back upstream. <path> can be:
+                          - a directory containing SKILL.md (or just SKILL.md)
+                          - a single .md file (auto-staged into a sibling dir)
+                        skill.json is auto-derived from frontmatter and flags
+                        (--id --description --category --tags …) when missing.
   mirror init           Clone the marketplace repo into ~/.skills-market/mirror
   mirror update         git pull the local mirror
   mirror status         Show mirror state
@@ -853,7 +854,14 @@ function parseFrontmatter(md: string): Record<string, string> {
 
 async function cmdPublish(args: string[]): Promise<void> {
   const f = parsePublishFlags(args);
-  const skillDir = resolve(f.dir ?? ".");
+  let skillDir = resolve(f.dir ?? ".");
+
+  // 0. File-mode: accept a single .md file. Stage it into a sibling directory
+  //    so the rest of the flow (which works on directories) is unchanged.
+  const inputStat = existsSync(skillDir) ? await stat(skillDir) : null;
+  if (inputStat?.isFile()) {
+    skillDir = await stageFromMarkdownFile(skillDir, f);
+  }
 
   // 1. SKILL.md is mandatory. skill.json is auto-derived from frontmatter +
   //    flags when missing, so users can publish a skill they've already
@@ -862,7 +870,7 @@ async function cmdPublish(args: string[]): Promise<void> {
   const skillMdPath = join(skillDir, "SKILL.md");
   if (!existsSync(skillMdPath)) {
     console.error(`[skills-market] No SKILL.md at ${skillMdPath}.`);
-    console.error(`Tip: this directory must contain at least a SKILL.md.`);
+    console.error(`Tip: pass either a directory containing SKILL.md, or a single .md file.`);
     process.exit(1);
   }
   const skillMd = await readFile(skillMdPath, "utf-8");
@@ -1049,6 +1057,71 @@ async function cmdPublish(args: string[]): Promise<void> {
     // Clean up scratch dir.
     await rm(scratch, { recursive: true, force: true });
   }
+}
+
+/**
+ * File-mode publish: accept a single .md file and produce a normal skill
+ * directory beside it.
+ *
+ * - <foo.md>    → create ./<id>/SKILL.md (id from frontmatter.name, --id, or
+ *                  filename-without-extension), keep the original .md untouched.
+ * - <SKILL.md>  → just shift up to the parent directory; no copy.
+ *
+ * If the source file lacks frontmatter, we synthesize one from frontmatter
+ * defaults (id and description) so agents can read the skill correctly.
+ */
+async function stageFromMarkdownFile(filePath: string, f: PublishFlags): Promise<string> {
+  if (!filePath.toLowerCase().endsWith(".md")) {
+    console.error(`[skills-market] Expected a .md file, got: ${filePath}`);
+    process.exit(1);
+  }
+  const fileBase = basename(filePath);
+  if (fileBase.toLowerCase() === "skill.md") {
+    // Already named SKILL.md — its parent directory is the skill dir.
+    return dirname(filePath);
+  }
+
+  const md = await readFile(filePath, "utf-8");
+  const fm = parseFrontmatter(md);
+  const fallbackId = fileBase.replace(/\.md$/i, "");
+  const id = f.id ?? fm.name ?? fallbackId;
+  if (!ID_PATTERN.test(id)) {
+    console.error(
+      `[skills-market] Cannot derive a valid skill id from "${fileBase}".\n` +
+        `Either rename the file (e.g. \`${fallbackId.replace(/[^a-z0-9-]/gi, "-").toLowerCase()}.md\`), add \`name: <id>\` to its YAML frontmatter, or pass --id <id>.`
+    );
+    process.exit(1);
+  }
+
+  const stagedDir = resolve(dirname(filePath), id);
+  if (existsSync(stagedDir)) {
+    const isDir = (await stat(stagedDir)).isDirectory();
+    if (!isDir) {
+      console.error(`[skills-market] ${stagedDir} exists and is not a directory. Pass --id to choose a different name.`);
+      process.exit(1);
+    }
+  }
+  await mkdir(stagedDir, { recursive: true });
+
+  const stagedSkillMd = join(stagedDir, "SKILL.md");
+  // Always sync the body from the source .md, so re-publishes pick up edits.
+  // Inject frontmatter if missing (use fm.* if any, otherwise we'll let the
+  // skill.json-derivation step error out for missing description).
+  const description = f.description ?? fm.description;
+  let staged = md;
+  if (!hasFrontmatter(md)) {
+    const lines: string[] = [`name: ${id}`];
+    if (description) lines.push(`description: ${description}`);
+    const block = `---\n${lines.join("\n")}\n---\n\n`;
+    staged = block + md.replace(/^\s+/, "");
+  }
+  await writeFile(stagedSkillMd, staged, "utf-8");
+  console.log(`[skills-market] Staged ${filePath} → ${stagedSkillMd}`);
+  return stagedDir;
+}
+
+function hasFrontmatter(md: string): boolean {
+  return /^---\s*\n[\s\S]*?\n---\s*(?:\n|$)/.test(md);
 }
 
 async function deriveAuthor(explicit?: string): Promise<string> {
