@@ -10,13 +10,21 @@
 装好 CLI 之后（见 [README.zh-CN.md](README.zh-CN.md#安装一行)）：
 
 ```bash
-skills-market init my-skill          # 在 ./my-skill/ 下生成 skill.json + SKILL.md
-$EDITOR my-skill/SKILL.md            # 写 prompt
-skills-market publish my-skill       # 验证 → 必要时 fork → push → 自动开 PR
+# 已经写好 SKILL.md？直接 publish：
+skills-market publish ./path/to/my-skill --category development
+
+# 从零开始？init 先 scaffold 再 publish：
+skills-market init my-skill
+$EDITOR my-skill/SKILL.md
+skills-market publish my-skill
 ```
 
-完。`publish` 跑的是和 CI 一样的 `build-registry` + `validate-registry`，
-在临时 clone 里建分支，用 `gh` CLI 必要时 fork 你自己副本，最后开 PR。
+`publish` 接受所有元数据 flag（`--id`、`--description`、`--category`、
+`--version`、`--author`、`--email`、`--license`、`--tags`）；当 `skill.json`
+不存在时只有 `--category` 必填，其他从 `SKILL.md` frontmatter / git config
+/ 默认值自动填充。`publish` 跑的是和 CI 一样的 `build-registry` +
+`validate-registry`，在临时 clone 里建分支，用 `gh` CLI 必要时 fork 你
+自己副本，最后开 PR。
 
 下面是**手动**流程 —— 想一次提多个 skill、修改 `category` 枚举，或者改基础设施文件
 （`publish` 不会动这些）时用得上。

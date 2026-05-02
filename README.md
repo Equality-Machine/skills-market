@@ -36,26 +36,53 @@ them — `~/.claude/skills/<id>/SKILL.md` for Claude Code,
 `~/.codex/skills/<id>/SKILL.md` for Codex CLI. Override with
 `--target=claude`, `--target=codex`, or `--target=all`.
 
-## Publish your own skill (one line)
+## Publish your own skill
+
+If you already have a `SKILL.md`, that's all you need — `publish` will
+auto-derive `skill.json` from its frontmatter + flags:
+
+```bash
+# from a directory that already contains SKILL.md (e.g. ~/.claude/skills/<id>/)
+skills-market publish ~/.claude/skills/cool-skill --category development
+# → writes skill.json, validates, branches, pushes, opens PR
+```
+
+If you're starting from scratch, `init` is a convenience scaffolder:
 
 ```bash
 skills-market init my-skill            # scaffold ./my-skill/{skill.json, SKILL.md}
-$EDITOR my-skill/SKILL.md              # write the prompt
-skills-market publish my-skill         # validate → fork (if needed) → push → open PR
+$EDITOR my-skill/SKILL.md
+skills-market publish my-skill
 ```
 
-`publish` does everything for you:
+`publish` flags (any of these populate the auto-generated `skill.json`):
 
-- runs the same registry build + schema validation that CI runs,
-- creates a fresh branch in a scratch clone,
-- tries `git push origin` first (works for maintainers); falls back to
-  `gh repo fork` + push to your fork for everyone else,
-- opens the PR via `gh pr create`.
+```
+--id <id>            (default: SKILL.md frontmatter `name`, or directory name)
+--display <name>     (default: id)
+--description <text> (default: SKILL.md frontmatter `description` — required)
+--category <cat>     REQUIRED if not in skill.json: one of
+                     demo / development / design / devops / writing /
+                     data / security / productivity / other
+--version <semver>   (default: 0.1.0)
+--author <name>      (default: git config user.name)
+--email <email>      (default: git config user.email)
+--license <SPDX>     (default: MIT)
+--tags <a,b,c>       (default: empty)
+--dry-run            print actions without pushing
+--no-pr              push the branch but don't open a PR
+```
+
+What `publish` does end-to-end:
+
+1. ensures `SKILL.md` exists (and `skill.json`, or auto-generates one)
+2. runs the same registry build + schema validation CI runs
+3. creates a fresh branch in a scratch clone
+4. tries `git push origin` first (maintainer fast-path); on permission
+   denied falls back to `gh repo fork` + push to your fork
+5. opens the PR via `gh pr create`
 
 You only need `gh auth login` once.
-
-Pass `--dry-run` to see what would happen, or `--no-pr` to push the branch
-without creating the PR.
 
 ## Cross-machine sync
 

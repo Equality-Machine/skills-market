@@ -35,25 +35,53 @@ Claude Code 是 `~/.claude/skills/<id>/SKILL.md`，Codex CLI 是
 `~/.codex/skills/<id>/SKILL.md`。要显式指定可加 `--target=claude` /
 `--target=codex` / `--target=all`。
 
-## 发布你自己的 skill（一行）
+## 发布你自己的 skill
+
+如果你已经写好了 `SKILL.md`，就可以直接 publish —— `skill.json` 会自动从
+frontmatter 和命令行 flag 派生：
 
 ```bash
-skills-market init my-skill            # 在 ./my-skill/ 下生成 skill.json + SKILL.md
-$EDITOR my-skill/SKILL.md              # 写 prompt
-skills-market publish my-skill         # 验证 → 必要时 fork → push → 自动开 PR
+# 直接对一个已存在的 SKILL.md 目录发布（例如 ~/.claude/skills/<id>/）
+skills-market publish ~/.claude/skills/cool-skill --category development
+# → 自动写入 skill.json，校验、建分支、push、开 PR
 ```
 
-`publish` 会替你做：
+从零开始时 `init` 是便利 scaffold：
 
-- 跑 CI 一样的 registry build + schema 校验
-- 在临时 clone 里建新分支
-- 先尝试 `git push origin`（maintainer 直接 push）；权限不够时自动
-  `gh repo fork` 到你自己 fork 然后 push
-- `gh pr create` 开 PR
+```bash
+skills-market init my-skill            # 在 ./my-skill/ 生成 skill.json + SKILL.md
+$EDITOR my-skill/SKILL.md
+skills-market publish my-skill
+```
 
-只需 `gh auth login` 一次即可。
+`publish` 支持的 flag（用来填自动生成的 `skill.json`）：
 
-可加 `--dry-run` 预演，加 `--no-pr` 只 push 不开 PR。
+```
+--id <id>            （默认：SKILL.md frontmatter 里的 name，或目录名）
+--display <name>     （默认：id）
+--description <text> （默认：SKILL.md frontmatter 里的 description——必填）
+--category <cat>     如果 skill.json 里没有则必填，可选：
+                     demo / development / design / devops / writing /
+                     data / security / productivity / other
+--version <semver>   （默认 0.1.0）
+--author <name>      （默认：git config user.name）
+--email <email>      （默认：git config user.email）
+--license <SPDX>     （默认 MIT）
+--tags <a,b,c>       （默认空）
+--dry-run            只打印将执行的动作，不真 push
+--no-pr              只 push 分支不开 PR
+```
+
+`publish` 内部完整流程：
+
+1. 检查 `SKILL.md` 存在（必要时自动生成 `skill.json`）
+2. 跑和 CI 一样的 registry build + schema 校验
+3. 在临时 clone 里建新分支
+4. 先尝试 `git push origin`（maintainer 直接 push）；权限不够则自动
+   `gh repo fork` 到你的 fork 再 push
+5. `gh pr create` 开 PR
+
+只需 `gh auth login` 一次。
 
 ## 跨机同步
 

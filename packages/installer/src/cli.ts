@@ -3,7 +3,7 @@ import { mkdir, cp, writeFile, readFile, stat, rm, mkdtemp } from "node:fs/promi
 import { existsSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { spawn } from "node:child_process";
-import { resolve, join, dirname } from "node:path";
+import { resolve, join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -121,7 +121,10 @@ Commands:
   remove <id>           Uninstall a skill (from every recorded target)
   sync                  Reinstall every skill in the personal manifest
   init <id>             Scaffold a new skill folder (skill.json + SKILL.md)
-  publish [<dir>]       One-shot PR a skill back upstream (auto fork if needed)
+  publish [<dir>]       One-shot PR a skill back upstream. <dir> only needs a
+                        SKILL.md — skill.json is auto-derived from frontmatter
+                        and flags (--id --description --category --tags …)
+                        if missing.
   mirror init           Clone the marketplace repo into ~/.skills-market/mirror
   mirror update         git pull the local mirror
   mirror status         Show mirror state
@@ -794,15 +797,35 @@ interface PublishFlags {
   dir?: string;
   dryRun?: boolean;
   noPr?: boolean;
+  // skill.json fields — used only when skill.json is missing.
+  id?: string;
+  display?: string;
+  description?: string;
+  category?: string;
+  version?: string;
+  author?: string;
+  email?: string;
+  license?: string;
+  tags?: string[];
 }
 
 function parsePublishFlags(args: string[]): PublishFlags {
   const f: PublishFlags = {};
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
+    const next = args[i + 1];
     if (a === "publish") continue;
     if (a === "--dry-run") f.dryRun = true;
     else if (a === "--no-pr") f.noPr = true;
+    else if (a === "--id" && next) (f.id = next), i++;
+    else if (a === "--display" && next) (f.display = next), i++;
+    else if (a === "--description" && next) (f.description = next), i++;
+    else if (a === "--category" && next) (f.category = next), i++;
+    else if (a === "--version" && next) (f.version = next), i++;
+    else if (a === "--author" && next) (f.author = next), i++;
+    else if (a === "--email" && next) (f.email = next), i++;
+    else if (a === "--license" && next) (f.license = next), i++;
+    else if (a === "--tags" && next) (f.tags = next.split(",").map((t) => t.trim()).filter(Boolean)), i++;
     else if (a.startsWith("--")) {
       console.error(`Unknown option: ${a}`);
       process.exit(2);
@@ -811,31 +834,83 @@ function parsePublishFlags(args: string[]): PublishFlags {
   return f;
 }
 
+/** Parse a tiny subset of YAML frontmatter — string scalars only. */
+function parseFrontmatter(md: string): Record<string, string> {
+  const m = md.match(/^---\s*\n([\s\S]*?)\n---\s*(?:\n|$)/);
+  if (!m) return {};
+  const out: Record<string, string> = {};
+  for (const line of m[1].split("\n")) {
+    const kv = line.match(/^\s*([A-Za-z0-9_-]+)\s*:\s*(.*?)\s*$/);
+    if (!kv) continue;
+    let v = kv[2];
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1);
+    }
+    out[kv[1]] = v;
+  }
+  return out;
+}
+
 async function cmdPublish(args: string[]): Promise<void> {
   const f = parsePublishFlags(args);
   const skillDir = resolve(f.dir ?? ".");
 
-  // 1. Validate local skill.
+  // 1. SKILL.md is mandatory. skill.json is auto-derived from frontmatter +
+  //    flags when missing, so users can publish a skill they've already
+  //    written without a separate `init` step.
   const skillJsonPath = join(skillDir, "skill.json");
   const skillMdPath = join(skillDir, "SKILL.md");
-  if (!existsSync(skillJsonPath)) {
-    console.error(`[skills-market] No skill.json at ${skillJsonPath}.`);
-    console.error(`Tip: \`skills-market init <id>\` to scaffold one.`);
-    process.exit(1);
-  }
   if (!existsSync(skillMdPath)) {
     console.error(`[skills-market] No SKILL.md at ${skillMdPath}.`);
+    console.error(`Tip: this directory must contain at least a SKILL.md.`);
     process.exit(1);
   }
+  const skillMd = await readFile(skillMdPath, "utf-8");
+  const fm = parseFrontmatter(skillMd);
+
   let meta: any;
-  try {
-    meta = JSON.parse(await readFile(skillJsonPath, "utf-8"));
-  } catch (err: any) {
-    console.error(`[skills-market] skill.json is not valid JSON: ${err.message}`);
-    process.exit(1);
+  if (existsSync(skillJsonPath)) {
+    try {
+      meta = JSON.parse(await readFile(skillJsonPath, "utf-8"));
+    } catch (err: any) {
+      console.error(`[skills-market] skill.json is not valid JSON: ${err.message}`);
+      process.exit(1);
+    }
+  } else {
+    // Derive metadata: SKILL.md frontmatter ⊃ flags ⊃ defaults.
+    const dirName = basename(skillDir);
+    const id = f.id ?? fm.name ?? dirName;
+    const description = f.description ?? fm.description;
+    const category = f.category;
+    const author = await deriveAuthor(f.author);
+    const email = f.email ?? (await deriveEmail());
+    const missing: string[] = [];
+    if (!description) missing.push("description (add `description: …` to SKILL.md frontmatter, or pass --description)");
+    if (!category) missing.push(`category (pass --category one of: ${ALLOWED_CATEGORIES.join(", ")})`);
+    if (missing.length) {
+      console.error(`[skills-market] No skill.json found at ${skillJsonPath}. Auto-deriving from SKILL.md, but the following are still missing:`);
+      for (const m of missing) console.error(`  - ${m}`);
+      console.error(`\nFlags supported: --id --display --description --category --version --author --email --license --tags`);
+      process.exit(1);
+    }
+    meta = {
+      id,
+      displayName: f.display ?? fm.name ?? id,
+      description,
+      version: f.version ?? "0.1.0",
+      author: email ? { name: author, email } : { name: author },
+      category,
+      tags: f.tags ?? [],
+      license: f.license ?? "MIT",
+      createdAt: new Date().toISOString(),
+    };
+    // Persist into the user's source dir so subsequent edits / republishes don't ask again.
+    await writeFile(skillJsonPath, JSON.stringify(meta, null, 2) + "\n", "utf-8");
+    console.log(`[skills-market] ✓ Wrote ${skillJsonPath} (derived from SKILL.md + flags)`);
   }
+
   if (!meta.id || !ID_PATTERN.test(meta.id)) {
-    console.error(`[skills-market] skill.json is missing a valid id (got: ${meta.id ?? "<missing>"})`);
+    console.error(`[skills-market] Invalid id "${meta.id ?? "<missing>"}". Must match ${ID_PATTERN}.`);
     process.exit(1);
   }
   if (!meta.description || meta.description.length < 10 || meta.description.length > 500) {
@@ -974,6 +1049,19 @@ async function cmdPublish(args: string[]): Promise<void> {
     // Clean up scratch dir.
     await rm(scratch, { recursive: true, force: true });
   }
+}
+
+async function deriveAuthor(explicit?: string): Promise<string> {
+  if (explicit) return explicit;
+  const r = await run("git", ["config", "--global", "user.name"]);
+  if (r.code === 0 && r.stdout.trim()) return r.stdout.trim();
+  return process.env.USER ?? "Anonymous";
+}
+
+async function deriveEmail(): Promise<string | undefined> {
+  const r = await run("git", ["config", "--global", "user.email"]);
+  if (r.code === 0 && r.stdout.trim()) return r.stdout.trim();
+  return undefined;
 }
 
 function repoUrlToFullName(url: string): string {
