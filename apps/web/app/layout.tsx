@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </a>
           <nav>
             <a href="/">Browse</a>
-            <a href="https://github.com/Mel0day/skills-market" target="_blank" rel="noreferrer">
+            <a href="https://github.com/Equality-Machine/skills-market" target="_blank" rel="noreferrer">
               GitHub
             </a>
           </nav>

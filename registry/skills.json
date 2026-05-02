@@ -26,18 +26,18 @@
       ],
       "install": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/design-critic",
         "command": "npx -y skills-market install design-critic"
       },
       "source": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/design-critic"
       },
-      "homepage": "https://github.com/Mel0day/skills-market",
+      "homepage": "https://github.com/Equality-Machine/skills-market",
       "license": "Apache-2.0",
       "createdAt": "2026-03-15T00:00:00Z",
       "downloads": 0,
@@ -60,18 +60,18 @@
       ],
       "install": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/git-helper",
         "command": "npx -y skills-market install git-helper"
       },
       "source": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/git-helper"
       },
-      "homepage": "https://github.com/Mel0day/skills-market",
+      "homepage": "https://github.com/Equality-Machine/skills-market",
       "license": "MIT",
       "createdAt": "2026-04-20T00:00:00Z",
       "downloads": 0,
@@ -94,14 +94,14 @@
       ],
       "install": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/hello-world",
         "command": "npx -y skills-market install hello-world"
       },
       "source": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/hello-world"
       },
@@ -127,18 +127,18 @@
       ],
       "install": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/k8s-doctor",
         "command": "npx -y skills-market install k8s-doctor"
       },
       "source": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/k8s-doctor"
       },
-      "homepage": "https://github.com/Mel0day/skills-market",
+      "homepage": "https://github.com/Equality-Machine/skills-market",
       "license": "MIT",
       "createdAt": "2026-02-10T00:00:00Z",
       "downloads": 0,
@@ -161,14 +161,14 @@
       ],
       "install": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/translate-cn-en",
         "command": "npx -y skills-market install translate-cn-en"
       },
       "source": {
         "type": "git-subdir",
-        "repo": "https://github.com/Mel0day/skills-market.git",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
         "ref": "main",
         "path": "skills/translate-cn-en"
       },

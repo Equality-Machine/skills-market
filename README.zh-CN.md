@@ -6,7 +6,7 @@
 
 ```bash
 # 1. 一台机器安装一次 CLI
-git clone https://github.com/Mel0day/skills-market ~/code/skills-market
+git clone https://github.com/Equality-Machine/skills-market ~/code/skills-market
 cd ~/code/skills-market && npm install && npm run build
 npm --workspace packages/installer link
 
@@ -60,7 +60,7 @@ skills-market/
 当前通过本仓库分发（npm 包名预留给未来发布）。每台机器一次性 setup：
 
 ```bash
-git clone https://github.com/Mel0day/skills-market ~/code/skills-market
+git clone https://github.com/Equality-Machine/skills-market ~/code/skills-market
 cd ~/code/skills-market
 npm install
 npm run build
@@ -102,7 +102,7 @@ skills-market catalog               # 列出整个 catalog
 
 ```bash
 claude mcp add skills-market -s user \
-  -e SKILLS_MARKET_REGISTRY_URL=https://raw.githubusercontent.com/Mel0day/skills-market/main/registry/skills.json \
+  -e SKILLS_MARKET_REGISTRY_URL=https://raw.githubusercontent.com/Equality-Machine/skills-market/main/registry/skills.json \
   -- node "$HOME/code/skills-market/apps/mcp-server/dist/server.js"
 ```
 
@@ -129,7 +129,7 @@ skills-market sync
 详见 [CONTRIBUTING.zh-CN.md](CONTRIBUTING.zh-CN.md)。简版：
 
 ```bash
-git clone https://github.com/Mel0day/skills-market
+git clone https://github.com/Equality-Machine/skills-market
 cd skills-market && npm install
 node scripts/submit-skill.mjs --rebuild   # 交互式 scaffold
 # 按需编辑 skills/<id>/SKILL.md
@@ -154,7 +154,7 @@ CI 会自动跑：
 - `skills/<id>/index.html` —— 单个 skill 的详情页
 - `registry.json` —— 原始 catalog，第三方工具直接拉取的官方地址：
   ```
-  https://mel0day.github.io/skills-market/registry.json
+  https://equality-machine.github.io/skills-market/registry.json
   ```
 
 ## Roadmap

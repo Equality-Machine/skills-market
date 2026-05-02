@@ -5,14 +5,14 @@
   "type": "module",
   "license": "MIT",
   "author": "Vincent Cheng <nx_meteor@163.com>",
-  "homepage": "https://github.com/Mel0day/skills-market#readme",
+  "homepage": "https://github.com/Equality-Machine/skills-market#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mel0day/skills-market.git",
+    "url": "git+https://github.com/Equality-Machine/skills-market.git",
     "directory": "packages/installer"
   },
   "bugs": {
-    "url": "https://github.com/Mel0day/skills-market/issues"
+    "url": "https://github.com/Equality-Machine/skills-market/issues"
   },
   "keywords": [
     "claude",

@@ -7,7 +7,7 @@ single CLI.
 
 ```bash
 # 1. Install the CLI once per machine
-git clone https://github.com/Mel0day/skills-market ~/code/skills-market
+git clone https://github.com/Equality-Machine/skills-market ~/code/skills-market
 cd ~/code/skills-market && npm install && npm run build
 npm --workspace packages/installer link
 
@@ -62,7 +62,7 @@ skills-market is distributed via this repository (the npm package is reserved
 for a future release). Setup is one-time per machine:
 
 ```bash
-git clone https://github.com/Mel0day/skills-market ~/code/skills-market
+git clone https://github.com/Equality-Machine/skills-market ~/code/skills-market
 cd ~/code/skills-market
 npm install
 npm run build
@@ -104,7 +104,7 @@ Register the MCP server once:
 
 ```bash
 claude mcp add skills-market -s user \
-  -e SKILLS_MARKET_REGISTRY_URL=https://raw.githubusercontent.com/Mel0day/skills-market/main/registry/skills.json \
+  -e SKILLS_MARKET_REGISTRY_URL=https://raw.githubusercontent.com/Equality-Machine/skills-market/main/registry/skills.json \
   -- node "$HOME/code/skills-market/apps/mcp-server/dist/server.js"
 ```
 
@@ -131,7 +131,7 @@ skills-market sync
 See [CONTRIBUTING.md](CONTRIBUTING.md). Short version:
 
 ```bash
-git clone https://github.com/Mel0day/skills-market
+git clone https://github.com/Equality-Machine/skills-market
 cd skills-market && npm install
 node scripts/submit-skill.mjs --rebuild   # interactive scaffolder
 # edit skills/<id>/SKILL.md as needed
@@ -156,7 +156,7 @@ export on every push to `main` and deploys to GitHub Pages:
 - `skills/<id>/index.html` — per-skill detail
 - `registry.json` — the raw catalog. The canonical URL for tooling:
   ```
-  https://mel0day.github.io/skills-market/registry.json
+  https://equality-machine.github.io/skills-market/registry.json
   ```
 
 ## Roadmap

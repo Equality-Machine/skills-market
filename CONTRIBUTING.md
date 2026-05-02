@@ -8,7 +8,7 @@ Thanks for adding a skill. The whole flow is one PR: a new directory under
 ## TL;DR
 
 ```bash
-git clone https://github.com/Mel0day/skills-market
+git clone https://github.com/Equality-Machine/skills-market
 cd skills-market
 npm install
 

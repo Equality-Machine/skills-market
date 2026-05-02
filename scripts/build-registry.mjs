@@ -15,7 +15,7 @@ const REGISTRY = join(ROOT, "registry", "skills.json");
 
 // Repo identity used when writing source.git.repo. Override via env when forking.
 const REPO_URL =
-  process.env.SKILLS_MARKET_REPO_URL ?? "https://github.com/Mel0day/skills-market.git";
+  process.env.SKILLS_MARKET_REPO_URL ?? "https://github.com/Equality-Machine/skills-market.git";
 const REPO_REF = process.env.SKILLS_MARKET_REPO_REF ?? "main";
 
 const REGISTRY_HEADER = {

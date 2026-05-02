@@ -1,6 +1,6 @@
 # skills-market
 
-The CLI for [skills-market](https://github.com/Mel0day/skills-market) — an
+The CLI for [skills-market](https://github.com/Equality-Machine/skills-market) — an
 open marketplace for Claude Code skills, backed by a public git repository.
 
 ## Install
@@ -34,7 +34,7 @@ skills-market catalog               # list the full catalog
 2. **Local mirror** — if you previously ran `skills-market mirror init`,
    copies from `~/.skills-market/mirror/skills/<id>/`.
 3. **Sparse `git clone`** of just the skill's subdirectory from the public
-   repo (default: `https://github.com/Mel0day/skills-market.git`). Fetches
+   repo (default: `https://github.com/Equality-Machine/skills-market.git`). Fetches
    ~50KB instead of the whole repo.
 
 The result is copied into `~/.claude/skills/<id>/` and tracked in your
@@ -60,13 +60,13 @@ skills-market sync   # reinstalls everything from the manifest
 | ------------------------------ | -------------------------------------------------------------------------------- | -------------------------------- |
 | `CLAUDE_SKILLS_DIR`            | `~/.claude/skills`                                                               | Where skills get installed       |
 | `SKILLS_MARKET_HOME`           | `~/.skills-market`                                                               | Personal data dir (manifest, mirror) |
-| `SKILLS_MARKET_REGISTRY_URL`   | `https://raw.githubusercontent.com/Mel0day/skills-market/main/registry/skills.json` | Catalog URL                  |
+| `SKILLS_MARKET_REGISTRY_URL`   | `https://raw.githubusercontent.com/Equality-Machine/skills-market/main/registry/skills.json` | Catalog URL                  |
 | `SKILLS_MARKET_REGISTRY_PATH`  | (none)                                                                           | Local catalog file (overrides URL) |
-| `SKILLS_MARKET_REPO_URL`       | `https://github.com/Mel0day/skills-market.git`                                   | Repo for sparse clones / mirror  |
+| `SKILLS_MARKET_REPO_URL`       | `https://github.com/Equality-Machine/skills-market.git`                                   | Repo for sparse clones / mirror  |
 
 ## Contribute a skill
 
-See the [main repository](https://github.com/Mel0day/skills-market/blob/main/CONTRIBUTING.md).
+See the [main repository](https://github.com/Equality-Machine/skills-market/blob/main/CONTRIBUTING.md).
 The whole flow is one PR: a new directory under `skills/`.
 
 ## License

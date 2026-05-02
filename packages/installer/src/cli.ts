@@ -15,7 +15,7 @@ const MANIFEST_PATH = join(SKILLS_MARKET_HOME, "installed.json");
 const MIRROR_DIR = join(SKILLS_MARKET_HOME, "mirror");
 const DEFAULT_REGISTRY_URL =
   process.env.SKILLS_MARKET_REGISTRY_URL ??
-  "https://raw.githubusercontent.com/Mel0day/skills-market/main/registry/skills.json";
+  "https://raw.githubusercontent.com/Equality-Machine/skills-market/main/registry/skills.json";
 
 interface SkillEntry {
   id: string;
@@ -385,7 +385,7 @@ async function cmdMirror(args: string[]): Promise<void> {
   const sub = args[0];
   const repoUrl =
     process.env.SKILLS_MARKET_REPO_URL ??
-    "https://github.com/Mel0day/skills-market.git";
+    "https://github.com/Equality-Machine/skills-market.git";
 
   if (sub === "init") {
     if (existsSync(MIRROR_DIR)) {
