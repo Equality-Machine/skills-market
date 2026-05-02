@@ -2,8 +2,24 @@
 
 [English](CONTRIBUTING.md) · [简体中文](CONTRIBUTING.zh-CN.md)
 
-感谢愿意来贡献 skill。整个流程是一个 PR：在 [`skills/`](skills/) 下新增
-一个目录，再重新生成 `registry/skills.json`。
+整个流程是一个 PR：在 [`skills/`](skills/) 下新增一个目录，再重新生成
+`registry/skills.json`。
+
+## 推荐：一行搞定
+
+装好 CLI 之后（见 [README.zh-CN.md](README.zh-CN.md#安装一行)）：
+
+```bash
+skills-market init my-skill          # 在 ./my-skill/ 下生成 skill.json + SKILL.md
+$EDITOR my-skill/SKILL.md            # 写 prompt
+skills-market publish my-skill       # 验证 → 必要时 fork → push → 自动开 PR
+```
+
+完。`publish` 跑的是和 CI 一样的 `build-registry` + `validate-registry`，
+在临时 clone 里建分支，用 `gh` CLI 必要时 fork 你自己副本，最后开 PR。
+
+下面是**手动**流程 —— 想一次提多个 skill、修改 `category` 枚举，或者改基础设施文件
+（`publish` 不会动这些）时用得上。
 
 ## TL;DR
 

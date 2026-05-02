@@ -2,8 +2,26 @@
 
 [English](CONTRIBUTING.md) · [简体中文](CONTRIBUTING.zh-CN.md)
 
-Thanks for adding a skill. The whole flow is one PR: a new directory under
-[`skills/`](skills/) plus a regenerated `registry/skills.json`.
+The whole flow is one PR: a new directory under [`skills/`](skills/) plus a
+regenerated `registry/skills.json`.
+
+## Recommended: one-liner
+
+If you've installed the CLI (see [README.md](README.md#install-one-line)):
+
+```bash
+skills-market init my-skill          # scaffold ./my-skill/{skill.json, SKILL.md}
+$EDITOR my-skill/SKILL.md            # write the prompt
+skills-market publish my-skill       # validate → fork (if needed) → push → open PR
+```
+
+That's it. `publish` runs the same `build-registry` + `validate-registry` that
+CI runs, branches in a scratch clone, and uses the `gh` CLI to fork (if you're
+not a maintainer) and open the PR.
+
+The rest of this document is the **manual** path — useful if you want to PR
+several skills at once, change the `category` enum, or otherwise edit
+infrastructure files that `publish` won't touch.
 
 ## TL;DR
 

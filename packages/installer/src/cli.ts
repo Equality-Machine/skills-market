@@ -120,6 +120,8 @@ Commands:
   list                  List skills tracked in the personal manifest
   remove <id>           Uninstall a skill (from every recorded target)
   sync                  Reinstall every skill in the personal manifest
+  init <id>             Scaffold a new skill folder (skill.json + SKILL.md)
+  publish [<dir>]       One-shot PR a skill back upstream (auto fork if needed)
   mirror init           Clone the marketplace repo into ~/.skills-market/mirror
   mirror update         git pull the local mirror
   mirror status         Show mirror state
@@ -651,6 +653,336 @@ async function cmdUpdate(args: string[]): Promise<void> {
   console.log(`\nNext: \`skills-market install <id>\` to add a new skill, or \`skills-market sync\` to apply version bumps to already-installed skills.`);
 }
 
+// ---------------------------------------------------------------------------
+// init — scaffold a local skill directory.
+// ---------------------------------------------------------------------------
+
+const ID_PATTERN = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
+const ALLOWED_CATEGORIES = [
+  "demo",
+  "development",
+  "design",
+  "devops",
+  "writing",
+  "data",
+  "security",
+  "productivity",
+  "other",
+];
+
+interface InitFlags {
+  id?: string;
+  display?: string;
+  description?: string;
+  category?: string;
+  version?: string;
+  author?: string;
+  email?: string;
+  license?: string;
+  tags?: string[];
+  dir?: string;
+  force?: boolean;
+}
+
+function parseInitFlags(args: string[]): InitFlags {
+  const f: InitFlags = {};
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    const next = args[i + 1];
+    if (a === "init") continue;
+    if (a === "--display" && next) (f.display = next), i++;
+    else if (a === "--description" && next) (f.description = next), i++;
+    else if (a === "--category" && next) (f.category = next), i++;
+    else if (a === "--version" && next) (f.version = next), i++;
+    else if (a === "--author" && next) (f.author = next), i++;
+    else if (a === "--email" && next) (f.email = next), i++;
+    else if (a === "--license" && next) (f.license = next), i++;
+    else if (a === "--tags" && next) (f.tags = next.split(",").map((t) => t.trim()).filter(Boolean)), i++;
+    else if (a === "--dir" && next) (f.dir = next), i++;
+    else if (a === "--force") f.force = true;
+    else if (a.startsWith("--")) {
+      console.error(`Unknown option: ${a}`);
+      process.exit(2);
+    } else if (!f.id) {
+      f.id = a;
+    }
+  }
+  return f;
+}
+
+async function cmdInit(args: string[]): Promise<void> {
+  const f = parseInitFlags(args);
+  if (!f.id) {
+    console.error("Usage: skills-market init <id> [--display ...] [--description ...] [--category ...] [--tags a,b] [--dir <path>]");
+    process.exit(2);
+  }
+  if (!ID_PATTERN.test(f.id)) {
+    console.error(`Invalid id "${f.id}". Must match ${ID_PATTERN}`);
+    process.exit(1);
+  }
+  const category = f.category ?? "other";
+  if (!ALLOWED_CATEGORIES.includes(category)) {
+    console.error(`Invalid category "${category}". Must be one of: ${ALLOWED_CATEGORIES.join(", ")}`);
+    process.exit(1);
+  }
+
+  const targetDir = resolve(f.dir ?? f.id);
+  if (existsSync(targetDir) && !f.force) {
+    if ((await readdirSafe(targetDir)).length > 0) {
+      console.error(`Directory exists and is not empty: ${targetDir} (use --force to overwrite)`);
+      process.exit(1);
+    }
+  }
+
+  const meta = {
+    id: f.id,
+    displayName: f.display ?? f.id,
+    description: f.description ?? `TODO: describe ${f.id} (10–500 chars).`,
+    version: f.version ?? "0.1.0",
+    author: f.email ? { name: f.author ?? "Anonymous", email: f.email } : { name: f.author ?? "Anonymous" },
+    category,
+    tags: f.tags ?? [],
+    license: f.license ?? "MIT",
+    createdAt: new Date().toISOString(),
+  };
+
+  const skillMd = `---
+name: ${f.id}
+description: ${meta.description}
+---
+
+# ${meta.displayName}
+
+<!-- TODO: write the prompt Claude Code / Codex CLI should follow when this skill is active. -->
+
+## Activation
+
+Activate when ...
+
+## What to do
+
+1. Step one.
+2. Step two.
+
+## Output
+
+Describe the desired output format.
+`;
+
+  await mkdir(targetDir, { recursive: true });
+  await writeFile(join(targetDir, "skill.json"), JSON.stringify(meta, null, 2) + "\n", "utf-8");
+  await writeFile(join(targetDir, "SKILL.md"), skillMd, "utf-8");
+  console.log(`[skills-market] ✓ Scaffolded ${targetDir}`);
+  console.log(`  ${join(targetDir, "skill.json")}`);
+  console.log(`  ${join(targetDir, "SKILL.md")}`);
+  console.log(`\nNext: edit SKILL.md, then run \`skills-market publish ${targetDir}\` to send a PR upstream.`);
+}
+
+async function readdirSafe(dir: string): Promise<string[]> {
+  try {
+    return await (await import("node:fs/promises")).readdir(dir);
+  } catch {
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// publish — one-shot PR a local skill into the marketplace.
+// ---------------------------------------------------------------------------
+
+interface PublishFlags {
+  dir?: string;
+  dryRun?: boolean;
+  noPr?: boolean;
+}
+
+function parsePublishFlags(args: string[]): PublishFlags {
+  const f: PublishFlags = {};
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === "publish") continue;
+    if (a === "--dry-run") f.dryRun = true;
+    else if (a === "--no-pr") f.noPr = true;
+    else if (a.startsWith("--")) {
+      console.error(`Unknown option: ${a}`);
+      process.exit(2);
+    } else if (!f.dir) f.dir = a;
+  }
+  return f;
+}
+
+async function cmdPublish(args: string[]): Promise<void> {
+  const f = parsePublishFlags(args);
+  const skillDir = resolve(f.dir ?? ".");
+
+  // 1. Validate local skill.
+  const skillJsonPath = join(skillDir, "skill.json");
+  const skillMdPath = join(skillDir, "SKILL.md");
+  if (!existsSync(skillJsonPath)) {
+    console.error(`[skills-market] No skill.json at ${skillJsonPath}.`);
+    console.error(`Tip: \`skills-market init <id>\` to scaffold one.`);
+    process.exit(1);
+  }
+  if (!existsSync(skillMdPath)) {
+    console.error(`[skills-market] No SKILL.md at ${skillMdPath}.`);
+    process.exit(1);
+  }
+  let meta: any;
+  try {
+    meta = JSON.parse(await readFile(skillJsonPath, "utf-8"));
+  } catch (err: any) {
+    console.error(`[skills-market] skill.json is not valid JSON: ${err.message}`);
+    process.exit(1);
+  }
+  if (!meta.id || !ID_PATTERN.test(meta.id)) {
+    console.error(`[skills-market] skill.json is missing a valid id (got: ${meta.id ?? "<missing>"})`);
+    process.exit(1);
+  }
+  if (!meta.description || meta.description.length < 10 || meta.description.length > 500) {
+    console.error(`[skills-market] description must be 10–500 chars (got ${meta.description?.length ?? 0})`);
+    process.exit(1);
+  }
+  if (!ALLOWED_CATEGORIES.includes(meta.category)) {
+    console.error(`[skills-market] category "${meta.category}" must be one of: ${ALLOWED_CATEGORIES.join(", ")}`);
+    process.exit(1);
+  }
+
+  console.log(`[skills-market] Publishing skill "${meta.id}" v${meta.version}`);
+  console.log(`[skills-market] From: ${skillDir}`);
+
+  // 2. Ensure gh CLI is present + authenticated.
+  const ghCheck = await run("gh", ["auth", "status"]);
+  if (ghCheck.code !== 0) {
+    console.error(`[skills-market] gh CLI is not authenticated. Run: gh auth login`);
+    process.exit(1);
+  }
+
+  const repoUrl = process.env.SKILLS_MARKET_REPO_URL ?? "https://github.com/Equality-Machine/skills-market.git";
+  const repoFull = repoUrlToFullName(repoUrl); // "Equality-Machine/skills-market"
+
+  // 3. Set up scratch clone.
+  const scratch = join(SKILLS_MARKET_HOME, "publish", `${meta.id}-${Date.now().toString(36)}`);
+  await mkdir(dirname(scratch), { recursive: true });
+  console.log(`[skills-market] Cloning ${repoUrl} → ${scratch}`);
+  let r = await run("git", ["clone", "--quiet", "--depth=20", repoUrl, scratch]);
+  if (r.code !== 0) {
+    console.error(`[skills-market] Clone failed: ${r.stderr.trim()}`);
+    process.exit(1);
+  }
+
+  // Use the gh user's verified name+email as the commit author.
+  const ghUser = (await run("gh", ["api", "user", "--jq", ".login"])).stdout.trim();
+
+  try {
+    // 4. Copy skill into skills/<id>/, regenerate registry, validate.
+    const targetSubdir = join(scratch, "skills", meta.id);
+    await rm(targetSubdir, { recursive: true, force: true });
+    await mkdir(dirname(targetSubdir), { recursive: true });
+    await cp(skillDir, targetSubdir, { recursive: true });
+    // Strip files contributors aren't supposed to ship (prior install receipts).
+    await rm(join(targetSubdir, ".skills-market.json"), { force: true });
+
+    r = await run("node", [join(scratch, "scripts/build-registry.mjs")], scratch);
+    if (r.code !== 0) {
+      console.error(`[skills-market] registry:build failed:\n${r.stderr}`);
+      process.exit(1);
+    }
+    r = await run("node", [join(scratch, "scripts/validate-registry.mjs")], scratch);
+    if (r.code !== 0) {
+      console.error(`[skills-market] registry:validate failed:\n${r.stdout}\n${r.stderr}`);
+      process.exit(1);
+    }
+    console.log(`[skills-market] ✓ Registry validated`);
+
+    // 5. Branch + commit.
+    const branch = `skill/${meta.id}-${Date.now().toString(36)}`;
+    await run("git", ["checkout", "-b", branch], scratch);
+    await run("git", ["add", "skills", "registry"], scratch);
+    const commitMsg = `add ${meta.id} skill\n\n${meta.description}`;
+    r = await run("git", ["-c", `user.name=${ghUser}`, "-c", `user.email=${ghUser}@users.noreply.github.com`, "commit", "-m", commitMsg], scratch);
+    if (r.code !== 0) {
+      console.error(`[skills-market] git commit failed:\n${r.stderr}`);
+      process.exit(1);
+    }
+
+    if (f.dryRun) {
+      console.log(`[skills-market] DRY RUN — would push and open PR`);
+      console.log(`  Branch: ${branch}`);
+      console.log(`  Repo:   ${repoFull}`);
+      return;
+    }
+
+    // 6. Try direct push (maintainer path), fall back to fork-and-push.
+    let pushTarget = "origin";
+    let prHead = branch;
+    r = await run("git", ["push", "--set-upstream", "origin", branch], scratch);
+    if (r.code !== 0) {
+      console.log(`[skills-market] Direct push denied — forking ${repoFull}`);
+      const forkRes = await run("gh", ["repo", "fork", repoFull, "--clone=false", "--remote=true", "--remote-name=fork"], scratch);
+      if (forkRes.code !== 0 && !/already exists/i.test(forkRes.stderr)) {
+        console.error(`[skills-market] gh repo fork failed:\n${forkRes.stderr}`);
+        process.exit(1);
+      }
+      r = await run("git", ["push", "--set-upstream", "fork", branch], scratch);
+      if (r.code !== 0) {
+        console.error(`[skills-market] Fork push failed:\n${r.stderr}`);
+        process.exit(1);
+      }
+      pushTarget = "fork";
+      prHead = `${ghUser}:${branch}`;
+    }
+    console.log(`[skills-market] ✓ Pushed branch "${branch}" to ${pushTarget}`);
+
+    if (f.noPr) {
+      console.log(`[skills-market] Skipping PR creation (--no-pr).`);
+      console.log(`Open one at: https://github.com/${repoFull}/compare/main...${prHead}`);
+      return;
+    }
+
+    // 7. Open PR via gh.
+    const prTitle = `add ${meta.id} skill`;
+    const prBody = [
+      `Adds the \`${meta.id}\` skill (v${meta.version}, ${meta.category}).`,
+      "",
+      `**Description:** ${meta.description}`,
+      "",
+      `Submitted via \`skills-market publish\`.`,
+    ].join("\n");
+    const prArgs = [
+      "pr",
+      "create",
+      "--repo",
+      repoFull,
+      "--title",
+      prTitle,
+      "--body",
+      prBody,
+      "--head",
+      prHead,
+      "--base",
+      "main",
+    ];
+    r = await run("gh", prArgs, scratch);
+    if (r.code !== 0) {
+      console.error(`[skills-market] gh pr create failed:\n${r.stderr}`);
+      console.log(`Manual link: https://github.com/${repoFull}/compare/main...${prHead}`);
+      process.exit(1);
+    }
+    process.stdout.write(r.stdout);
+    console.log(`[skills-market] ✓ PR opened.`);
+  } finally {
+    // Clean up scratch dir.
+    await rm(scratch, { recursive: true, force: true });
+  }
+}
+
+function repoUrlToFullName(url: string): string {
+  // Accepts https://github.com/<owner>/<repo>.git or git@github.com:<owner>/<repo>.git
+  const m = url.match(/[/:]([^/:]+)\/([^/]+?)(?:\.git)?$/);
+  if (!m) throw new Error(`Cannot parse repo from URL: ${url}`);
+  return `${m[1]}/${m[2]}`;
+}
+
 async function cmdSearch(args: string[]): Promise<void> {
   const { common, rest } = parseCommon(args);
   const query = rest.find((a) => !a.startsWith("--") && a !== "search");
@@ -706,6 +1038,12 @@ async function main() {
     case "pull":
     case "refresh":
       return cmdUpdate(rest);
+    case "init":
+    case "new":
+      return cmdInit(rest);
+    case "publish":
+    case "submit":
+      return cmdPublish(rest);
     case "mirror":
       return cmdMirror(rest);
     case "search":
