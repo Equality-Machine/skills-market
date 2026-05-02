@@ -885,20 +885,23 @@ async function cmdPublish(args: string[]): Promise<void> {
       process.exit(1);
     }
   } else {
-    // Derive metadata: SKILL.md frontmatter ⊃ flags ⊃ defaults.
+    // Derive metadata: flags ⊃ SKILL.md frontmatter ⊃ defaults.
     const dirName = basename(skillDir);
     const id = f.id ?? fm.name ?? dirName;
     const description = f.description ?? fm.description;
-    const category = f.category;
+    // Category is optional — frontmatter can declare it, otherwise default to
+    // "other". The validator still enforces the enum below.
+    const category = (f.category ?? fm.category ?? "other").toLowerCase();
     const author = await deriveAuthor(f.author);
     const email = f.email ?? (await deriveEmail());
-    const missing: string[] = [];
-    if (!description) missing.push("description (add `description: …` to SKILL.md frontmatter, or pass --description)");
-    if (!category) missing.push(`category (pass --category one of: ${ALLOWED_CATEGORIES.join(", ")})`);
-    if (missing.length) {
-      console.error(`[skills-market] No skill.json found at ${skillJsonPath}. Auto-deriving from SKILL.md, but the following are still missing:`);
-      for (const m of missing) console.error(`  - ${m}`);
+    if (!description) {
+      console.error(`[skills-market] No skill.json found at ${skillJsonPath}, and SKILL.md doesn't define a description.`);
+      console.error(`  Either add \`description: …\` to the YAML frontmatter, or pass --description "<text>".`);
       console.error(`\nFlags supported: --id --display --description --category --version --author --email --license --tags`);
+      process.exit(1);
+    }
+    if (!ALLOWED_CATEGORIES.includes(category)) {
+      console.error(`[skills-market] Invalid category "${category}". Valid: ${ALLOWED_CATEGORIES.join(", ")}.`);
       process.exit(1);
     }
     meta = {

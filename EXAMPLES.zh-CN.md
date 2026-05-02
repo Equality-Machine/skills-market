@@ -284,7 +284,7 @@ You are awesome.
 ```
 
 ```bash
-$ skills-market publish ./awesome-tool.md --category development --dry-run
+$ skills-market publish ./awesome-tool.md --dry-run
 ```
 
 ```text
@@ -316,12 +316,16 @@ $ skills-market publish ./awesome-tool.md --category development --dry-run
   "description": "A simple tool that does awesome things; for the e2e test demo.",
   "version": "0.1.0",
   "author": { "name": "Mel0day", "email": "nx_meteor@163.com" },
-  "category": "development",
+  "category": "other",
   "tags": [],
   "license": "MIT",
   "createdAt": "2026-05-02T13:02:…"
 }
 ```
+
+`category` 默认是 `"other"`：frontmatter 没声明、命令行也没传时就走默认。
+两个来源都可覆盖（frontmatter 加 `category: development`，或 flag
+`--category development`）。
 
 ### 11b. `.md` 没有 frontmatter —— 自动注入
 
@@ -338,7 +342,6 @@ You are helpful when asked about no-frontmatter situations.
 
 ```bash
 $ skills-market publish ./no-fm.md \
-    --category development \
     --description "Test skill that has no frontmatter; we inject one." \
     --dry-run
 ```
@@ -371,27 +374,32 @@ You are helpful when asked about no-frontmatter situations.
 传文件或目录都行：
 
 ```bash
-skills-market publish ~/.claude/skills/cool-skill --category development
-skills-market publish ~/.codex/skills/cool-skill/SKILL.md --category development
+skills-market publish ~/.claude/skills/cool-skill
+skills-market publish ~/.codex/skills/cool-skill/SKILL.md
 ```
 
 两种写法都跳过 staging 步骤（不会建新目录）。
 
-### 11d. 缺 `--category` —— 友好报错
+### 11d. 显式设置 category
+
+两种方式。frontmatter 里：
+
+```markdown
+---
+name: my-tool
+description: …
+category: development
+---
+```
+
+或者命令行：
 
 ```bash
-$ skills-market publish ./awesome-tool.md --dry-run
+skills-market publish ./my-tool.md --category development
 ```
 
-```text
-[skills-market] Staged ./awesome-tool.md → ./awesome-tool/SKILL.md
-[skills-market] No skill.json found at ./awesome-tool/skill.json. Auto-deriving from SKILL.md, but the following are still missing:
-  - category (pass --category one of: demo, development, design, devops, writing, data, security, productivity, other)
-
-Flags supported: --id --display --description --category --version --author --email --license --tags
-```
-
-`--category` 是唯一必填 flag（frontmatter 里通常没有，CLI 不瞎猜）。
+合法值：`demo`、`development`、`design`、`devops`、`writing`、`data`、
+`security`、`productivity`、`other`。两边都没设时默认 `other`。
 
 ### 11e. 真发（去掉 `--dry-run`）
 
@@ -492,8 +500,8 @@ skills-market search regex
 skills-market install hello-world regex-explainer
 
 # 发布自己的 —— 单个 .md / 目录 / 已装好的 skill 都行
-skills-market publish ./my-tool.md --category development
-skills-market publish ~/.claude/skills/my-tool --category development
+skills-market publish ./my-tool.md
+skills-market publish ~/.claude/skills/my-tool
 
 # 跟上游
 skills-market update

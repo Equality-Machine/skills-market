@@ -11,10 +11,10 @@ If you've installed the CLI (see [README.md](README.md#install-one-line)):
 
 ```bash
 # Have a markdown file? Publish it directly:
-skills-market publish ./my-tool.md --category development
+skills-market publish ./my-tool.md
 
 # Have a directory with SKILL.md? Same command:
-skills-market publish ./my-tool --category development
+skills-market publish ./my-tool
 
 # Starting from scratch? `init` scaffolds, then publish:
 skills-market init my-tool
@@ -23,10 +23,12 @@ skills-market publish my-tool
 ```
 
 `publish` accepts every metadata flag (`--id`, `--description`, `--category`,
-`--version`, `--author`, `--email`, `--license`, `--tags`); only `--category`
-is required when `skill.json` is missing. It runs the same `build-registry` +
-`validate-registry` that CI runs, branches in a scratch clone, and uses
-`gh` to fork (if you're not a maintainer) and open the PR.
+`--version`, `--author`, `--email`, `--license`, `--tags`); none of them are
+strictly required as long as the `.md` frontmatter has a `description:` line
+(category defaults to `other`, everything else has a sensible default). It
+runs the same `build-registry` + `validate-registry` that CI runs, branches
+in a scratch clone, and uses `gh` to fork (if you're not a maintainer) and
+open the PR.
 
 The rest of this document is the **manual** path — useful if you want to PR
 several skills at once, change the `category` enum, or otherwise edit

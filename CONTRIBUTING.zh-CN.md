@@ -11,10 +11,10 @@
 
 ```bash
 # 有一个 markdown 文件？直接 publish：
-skills-market publish ./my-tool.md --category development
+skills-market publish ./my-tool.md
 
 # 有一个含 SKILL.md 的目录？同样的命令：
-skills-market publish ./my-tool --category development
+skills-market publish ./my-tool
 
 # 从零开始？init 先 scaffold 再 publish：
 skills-market init my-tool
@@ -23,11 +23,11 @@ skills-market publish my-tool
 ```
 
 `publish` 接受所有元数据 flag（`--id`、`--description`、`--category`、
-`--version`、`--author`、`--email`、`--license`、`--tags`）；当 `skill.json`
-不存在时只有 `--category` 必填，其他从 `SKILL.md` frontmatter / git config
-/ 默认值自动填充。`publish` 跑的是和 CI 一样的 `build-registry` +
-`validate-registry`，在临时 clone 里建分支，用 `gh` CLI 必要时 fork 你
-自己副本，最后开 PR。
+`--version`、`--author`、`--email`、`--license`、`--tags`）；只要 `.md`
+frontmatter 里有 `description:`，所有 flag 都不必传（category 默认
+`other`，其他字段都有合理默认）。`publish` 跑的是和 CI 一样的
+`build-registry` + `validate-registry`，在临时 clone 里建分支，用 `gh`
+CLI 必要时 fork 你自己副本，最后开 PR。
 
 下面是**手动**流程 —— 想一次提多个 skill、修改 `category` 枚举，或者改基础设施文件
 （`publish` 不会动这些）时用得上。

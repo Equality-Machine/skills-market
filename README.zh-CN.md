@@ -43,12 +43,16 @@ Claude Code 是 `~/.claude/skills/<id>/SKILL.md`，Codex CLI 是
 最简单的场景 —— 你只有一个 markdown 文件：
 
 ```bash
-skills-market publish ./awesome-tool.md --category development
+skills-market publish ./awesome-tool.md
 ```
 
 就这一行。`publish` 帮你做剩下的：把 `.md` 文件 stage 到同级 `./awesome-tool/`
 目录，从 frontmatter + 你的 git config 自动派生 `skill.json`，跑和 CI 一样的
 schema 校验，建分支、push（或 fork 后 push）、用 `gh` 自动开 PR。
+
+唯一硬性要求是 frontmatter 里有 `description:` 这一行（或者命令行加
+`--description "..."`）。`category` 现在是可选 —— 不传默认为 `other`；
+想分类可以在 frontmatter 加 `category: design` 之类，或者命令行 `--category design`。
 
 `<path>` 可以是任何能找到 SKILL.md 的路径：
 

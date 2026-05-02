@@ -294,7 +294,7 @@ You are awesome.
 ```
 
 ```bash
-$ skills-market publish ./awesome-tool.md --category development --dry-run
+$ skills-market publish ./awesome-tool.md --dry-run
 ```
 
 ```text
@@ -326,12 +326,17 @@ The generated `skill.json`:
   "description": "A simple tool that does awesome things; for the e2e test demo.",
   "version": "0.1.0",
   "author": { "name": "Mel0day", "email": "nx_meteor@163.com" },
-  "category": "development",
+  "category": "other",
   "tags": [],
   "license": "MIT",
   "createdAt": "2026-05-02T13:02:…"
 }
 ```
+
+`category` defaulted to `"other"` because the frontmatter didn't declare
+one and no `--category` flag was passed. Either source can override it
+(e.g. add `category: development` to frontmatter, or pass `--category
+development`).
 
 ### 11b. `.md` without frontmatter — auto-injected
 
@@ -349,7 +354,6 @@ You are helpful when asked about no-frontmatter situations.
 
 ```bash
 $ skills-market publish ./no-fm.md \
-    --category development \
     --description "Test skill that has no frontmatter; we inject one." \
     --dry-run
 ```
@@ -382,28 +386,33 @@ If you already have a `SKILL.md` inside a directory (very common for
 `~/.claude/skills/<id>/`), pass either the file or the directory:
 
 ```bash
-skills-market publish ~/.claude/skills/cool-skill --category development
-skills-market publish ~/.codex/skills/cool-skill/SKILL.md --category development
+skills-market publish ~/.claude/skills/cool-skill
+skills-market publish ~/.codex/skills/cool-skill/SKILL.md
 ```
 
 Both forms skip the staging step (no new directory is created).
 
-### 11d. Missing `--category` → friendly error
+### 11d. Set the category explicitly
+
+Two ways. In the frontmatter:
+
+```markdown
+---
+name: my-tool
+description: …
+category: development
+---
+```
+
+Or as a flag:
 
 ```bash
-$ skills-market publish ./awesome-tool.md --dry-run
+skills-market publish ./my-tool.md --category development
 ```
 
-```text
-[skills-market] Staged ./awesome-tool.md → ./awesome-tool/SKILL.md
-[skills-market] No skill.json found at ./awesome-tool/skill.json. Auto-deriving from SKILL.md, but the following are still missing:
-  - category (pass --category one of: demo, development, design, devops, writing, data, security, productivity, other)
-
-Flags supported: --id --display --description --category --version --author --email --license --tags
-```
-
-`--category` is the only required flag (frontmatter rarely contains it; we
-don't guess).
+Valid: `demo`, `development`, `design`, `devops`, `writing`, `data`,
+`security`, `productivity`, `other`. If you don't set one anywhere,
+`category` defaults to `other`.
 
 ### 11e. Real publish (drop `--dry-run`)
 
@@ -505,8 +514,8 @@ skills-market search regex
 skills-market install hello-world regex-explainer
 
 # publish your own — bare .md, directory, or already-staged skill all work
-skills-market publish ./my-tool.md --category development
-skills-market publish ~/.claude/skills/my-tool --category development
+skills-market publish ./my-tool.md
+skills-market publish ~/.claude/skills/my-tool
 
 # stay current
 skills-market update

@@ -44,13 +44,19 @@ them — `~/.claude/skills/<id>/SKILL.md` for Claude Code,
 The simplest case — you've got a markdown file:
 
 ```bash
-skills-market publish ./awesome-tool.md --category development
+skills-market publish ./awesome-tool.md
 ```
 
 That's it. `publish` does the rest: stages the file into a sibling
 `./awesome-tool/` directory, auto-derives `skill.json` from frontmatter +
 your git config, runs the same schema validation CI runs, branches, pushes
-(or forks then pushes), opens the PR via `gh`.
+(or forks then pushes), opens the PR via `gh`. The only hard requirement is
+that the file's frontmatter has a `description:` line (or you pass
+`--description "…"`).
+
+`category` is optional now — defaults to `other`. Add `category: design`
+(etc.) to your frontmatter, or pass `--category design`, if you want it
+classified.
 
 You can pass anything that resolves to a SKILL.md:
 
