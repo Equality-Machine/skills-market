@@ -2,7 +2,8 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
-一个开放的 **Claude Code skills 市场** —— 以 git 为后端，单条 CLI 命令安装。
+一个开放的 **Claude Code & Codex CLI skills 市场** —— 以 git 为后端，
+单条 CLI 命令安装。一份 skill，两个 agent 都能用。
 
 ```bash
 # 1. 一台机器安装一次 CLI
@@ -10,10 +11,11 @@ git clone https://github.com/Equality-Machine/skills-market ~/code/skills-market
 cd ~/code/skills-market && npm install && npm run build
 npm --workspace packages/installer link
 
-# 2. 浏览 + 安装
+# 2. 浏览 + 安装（默认装到所有检测到的 agent）
 skills-market catalog
 skills-market install hello-world
-# → ~/.claude/skills/hello-world/SKILL.md
+# → ~/.claude/skills/hello-world/SKILL.md   （如果你装了 Claude Code）
+# → ~/.codex/skills/hello-world/SKILL.md    （如果你装了 Codex CLI）
 
 # 3. 同步到第二台机器（manifest 在 ~/.skills-market/installed.json）
 skills-market list
@@ -30,6 +32,12 @@ skills-market mirror update
 新增目录；用户通过 `git` 的稀疏检出（sparse checkout）只拉自己想要的那个
 目录。无需为每个 skill 单独发布 npm 包，无需中心化注册服务，无需鉴权 —— 一
 个公开的 git 仓库 + 一个 CLI 而已。
+
+**Claude Code** 和 **Codex CLI** 读取 skill 的格式是一样的：都是
+`<id>/SKILL.md`，只是父目录不同（`~/.claude/skills/` vs
+`~/.codex/skills/`）。`skills-market install` 会自动检测你机器上装了哪几个
+agent，全部写入；不想这样可以加 `--target=claude` / `--target=codex` /
+`--target=all` 显式指定。
 
 ```
 skills-market/
@@ -77,16 +85,19 @@ npm --workspace packages/installer link
 ### CLI 命令
 
 ```bash
-skills-market install <id>          # 安装 skill 到 ~/.claude/skills/<id>/
-skills-market update                # git pull 最新 catalog 并显示新增的 skill
-skills-market list                  # 列出 manifest 里的已装 skill
-skills-market remove <id>           # 卸载某个 skill
-skills-market sync                  # 重装 manifest 里的所有 skill
-skills-market mirror init           # 本地 clone 一份完整仓库
-skills-market mirror update         # 拉取最新（git pull）
+skills-market install <id>                  # 装到所有检测到的 agent
+skills-market install <id> --target=codex   # 只装到 ~/.codex/skills/<id>/
+skills-market install <id> --target=all     # 两个都装（即使某个 home 还不存在）
+skills-market update                        # git pull 最新 catalog，显示新增
+skills-market list                          # 列出 manifest，按 target 显示在/缺
+skills-market remove <id>                   # 卸载（默认按 manifest 记录的 target）
+skills-market remove <id> --target=codex    # 只从 Codex 卸载
+skills-market sync                          # 按 manifest 重装所有 skill
+skills-market mirror init                   # 本地 clone 一份完整仓库
+skills-market mirror update                 # 拉取最新（git pull）
 skills-market mirror status
-skills-market search <关键词>        # 全文搜索 catalog
-skills-market catalog               # 列出整个 catalog
+skills-market search <关键词>                # 全文搜索 catalog
+skills-market catalog                       # 列出整个 catalog
 ```
 
 ### 看别人发布的新 skill（同步上游）

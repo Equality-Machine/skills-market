@@ -2,8 +2,8 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
-An open marketplace for **Claude Code skills** — git-backed, install via a
-single CLI.
+An open marketplace for **Claude Code & Codex CLI skills** — git-backed,
+install via a single CLI. One skill, both agents.
 
 ```bash
 # 1. Install the CLI once per machine
@@ -11,10 +11,11 @@ git clone https://github.com/Equality-Machine/skills-market ~/code/skills-market
 cd ~/code/skills-market && npm install && npm run build
 npm --workspace packages/installer link
 
-# 2. Browse + install
+# 2. Browse + install (auto-installs into every agent home that exists)
 skills-market catalog
 skills-market install hello-world
-# → ~/.claude/skills/hello-world/SKILL.md
+# → ~/.claude/skills/hello-world/SKILL.md   (if Claude Code is installed)
+# → ~/.codex/skills/hello-world/SKILL.md    (if Codex CLI is installed)
 
 # 3. Sync to a second machine (manifest at ~/.skills-market/installed.json)
 skills-market list
@@ -31,6 +32,13 @@ Each skill lives at [`skills/<id>/`](skills/) in this repo. Contributors PR a
 new directory; consumers `git`-fetch only the directory they want via sparse
 checkout. No per-skill npm publish, no central registry server, no auth — just
 a public git repo with a CLI in front of it.
+
+Both **Claude Code** and **Codex CLI** read skills from the same `<id>/SKILL.md`
+shape (just different parent directories: `~/.claude/skills/` vs
+`~/.codex/skills/`). `skills-market install` auto-detects which agents are on
+your machine and writes to all of them, so one skill becomes available wherever
+you happen to be working. Override per-install with `--target=claude`,
+`--target=codex`, or `--target=all`.
 
 ```
 skills-market/
@@ -79,16 +87,19 @@ To uninstall: `npm --workspace packages/installer unlink`.
 ### CLI commands
 
 ```bash
-skills-market install <id>          # install a skill into ~/.claude/skills/<id>/
-skills-market update                # git pull latest catalog and show what's new
-skills-market list                  # list skills tracked in your manifest
-skills-market remove <id>           # uninstall a skill
-skills-market sync                  # reinstall everything in the manifest
-skills-market mirror init           # clone the marketplace repo locally
-skills-market mirror update         # git pull the local mirror
+skills-market install <id>                  # install into every detected agent
+skills-market install <id> --target=codex   # only ~/.codex/skills/<id>/
+skills-market install <id> --target=all     # both, even if one home doesn't exist yet
+skills-market update                        # git pull latest catalog, show what's new
+skills-market list                          # list skills tracked in your manifest
+skills-market remove <id>                   # uninstall (every recorded target)
+skills-market remove <id> --target=codex    # uninstall only from Codex
+skills-market sync                          # reinstall everything in the manifest
+skills-market mirror init                   # clone the marketplace repo locally
+skills-market mirror update                 # git pull the local mirror
 skills-market mirror status
-skills-market search <query>        # full-text search the catalog
-skills-market catalog               # list the full catalog
+skills-market search <query>                # full-text search the catalog
+skills-market catalog                       # list the full catalog
 ```
 
 ### See what other people have published

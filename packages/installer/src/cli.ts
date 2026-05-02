@@ -9,13 +9,63 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 const HOME = homedir();
-const CLAUDE_SKILLS_DIR = process.env.CLAUDE_SKILLS_DIR ?? join(HOME, ".claude", "skills");
 const SKILLS_MARKET_HOME = process.env.SKILLS_MARKET_HOME ?? join(HOME, ".skills-market");
 const MANIFEST_PATH = join(SKILLS_MARKET_HOME, "installed.json");
 const MIRROR_DIR = join(SKILLS_MARKET_HOME, "mirror");
 const DEFAULT_REGISTRY_URL =
   process.env.SKILLS_MARKET_REGISTRY_URL ??
   "https://raw.githubusercontent.com/Equality-Machine/skills-market/main/registry/skills.json";
+
+// Targets are agent runtimes that read skills from a local directory in the
+// same `<id>/SKILL.md` shape. Both Claude Code and Codex CLI use this layout.
+type TargetName = "claude" | "codex";
+
+interface Target {
+  name: TargetName;
+  home: string;
+  skillsDir: string;
+  label: string;
+}
+
+const TARGETS: Record<TargetName, Target> = {
+  claude: {
+    name: "claude",
+    home: process.env.CLAUDE_HOME ?? join(HOME, ".claude"),
+    skillsDir: process.env.CLAUDE_SKILLS_DIR ?? join(HOME, ".claude", "skills"),
+    label: "Claude Code",
+  },
+  codex: {
+    name: "codex",
+    home: process.env.CODEX_HOME ?? join(HOME, ".codex"),
+    skillsDir: process.env.CODEX_SKILLS_DIR ?? join(HOME, ".codex", "skills"),
+    label: "Codex CLI",
+  },
+};
+
+const ALL_TARGETS: TargetName[] = ["claude", "codex"];
+
+function resolveTargets(explicit: TargetName[] | null): Target[] {
+  if (explicit && explicit.length) return explicit.map((n) => TARGETS[n]);
+  // Auto-detect: any agent home that already exists on disk.
+  const detected = ALL_TARGETS.filter((n) => existsSync(TARGETS[n].home));
+  if (detected.length) return detected.map((n) => TARGETS[n]);
+  // Fallback: install to Claude (the original target) so we never silently no-op.
+  return [TARGETS.claude];
+}
+
+function parseTargets(value: string): TargetName[] {
+  const parts = value
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  if (parts.includes("all")) return ALL_TARGETS;
+  const valid: TargetName[] = [];
+  for (const p of parts) {
+    if (p === "claude" || p === "codex") valid.push(p);
+    else throw new Error(`Unknown target "${p}". Valid: claude, codex, all.`);
+  }
+  return valid;
+}
 
 interface SkillEntry {
   id: string;
@@ -41,6 +91,7 @@ interface InstalledEntry {
   installedAt: string;
   source: any;
   install: any;
+  targets?: TargetName[];
 }
 
 interface PersonalManifest {
@@ -53,20 +104,21 @@ interface CommonOpts {
   registryUrl?: string;
   registryPath?: string;
   useMirror: boolean;
+  targets: TargetName[] | null;
 }
 
 function help(): void {
   console.log(
-    `skills-market — Claude Code skills marketplace
+    `skills-market — agent skills marketplace (Claude Code + Codex CLI)
 
 Usage:
   npx skills-market <command> [args]
 
 Commands:
-  install <id>          Install a skill into ~/.claude/skills/<id>/
+  install <id>          Install a skill into every detected agent's skills dir
   update                Pull latest catalog (git pull) and report new skills
   list                  List skills tracked in the personal manifest
-  remove <id>           Uninstall a skill
+  remove <id>           Uninstall a skill (from every recorded target)
   sync                  Reinstall every skill in the personal manifest
   mirror init           Clone the marketplace repo into ~/.skills-market/mirror
   mirror update         git pull the local mirror
@@ -75,16 +127,22 @@ Commands:
   catalog               List the full catalog from the registry
 
 Common options:
+  --target <list>          Comma-separated target list: claude,codex,all
+                           (default: auto — every agent home that exists)
   --registry-url <url>     Catalog URL (default ${DEFAULT_REGISTRY_URL})
   --registry-path <file>   Local catalog file
   --mirror                 Prefer ~/.skills-market/mirror over network for installs
   --dry-run                Print actions without changing the filesystem
 
+Targets (where SKILL.md gets copied):
+  claude   ~/.claude/skills/<id>/   (override with CLAUDE_SKILLS_DIR / CLAUDE_HOME)
+  codex    ~/.codex/skills/<id>/    (override with CODEX_SKILLS_DIR  / CODEX_HOME)
+
 Environment:
-  CLAUDE_SKILLS_DIR              Target dir for skills (default ~/.claude/skills)
   SKILLS_MARKET_HOME             Personal data dir (default ~/.skills-market)
   SKILLS_MARKET_REGISTRY_URL     Override registry URL
   SKILLS_MARKET_REGISTRY_PATH    Override registry path
+  SKILLS_MARKET_TARGETS          Default --target list (e.g. "claude,codex")
 `
   );
 }
@@ -94,13 +152,18 @@ function parseCommon(args: string[]): { common: CommonOpts; rest: string[] } {
     registryUrl: process.env.SKILLS_MARKET_REGISTRY_URL ?? DEFAULT_REGISTRY_URL,
     registryPath: process.env.SKILLS_MARKET_REGISTRY_PATH,
     useMirror: false,
+    targets: null,
   };
+  const envTargets = process.env.SKILLS_MARKET_TARGETS;
+  if (envTargets) common.targets = parseTargets(envTargets);
   const rest: string[] = [];
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--registry-url" && args[i + 1]) common.registryUrl = args[++i];
     else if (a === "--registry-path" && args[i + 1]) common.registryPath = args[++i];
     else if (a === "--mirror") common.useMirror = true;
+    else if (a === "--target" && args[i + 1]) common.targets = parseTargets(args[++i]);
+    else if (a.startsWith("--target=")) common.targets = parseTargets(a.slice("--target=".length));
     else rest.push(a);
   }
   return { common, rest };
@@ -231,31 +294,41 @@ async function installSkill(
   skill: SkillEntry,
   opts: CommonOpts & { dryRun?: boolean; noTrack?: boolean }
 ): Promise<void> {
-  const targetDir = join(CLAUDE_SKILLS_DIR, skill.id);
-  console.log(`[skills-market] Installing ${skill.displayName ?? skill.name} (${skill.id}) v${skill.version}`);
-  console.log(`[skills-market] Target: ${targetDir}`);
+  const targets = resolveTargets(opts.targets);
+  console.log(
+    `[skills-market] Installing ${skill.displayName ?? skill.name} (${skill.id}) v${skill.version}`
+  );
+  console.log(`[skills-market] Targets: ${targets.map((t) => t.label).join(", ")}`);
 
   const { dir: sourceDir, cleanup } = await resolveSourceDir(skill, opts);
   console.log(`[skills-market] Source: ${sourceDir}`);
 
   try {
     if (opts.dryRun) {
-      console.log(`[skills-market] DRY RUN — would copy ${sourceDir} → ${targetDir}`);
+      for (const t of targets) {
+        console.log(
+          `[skills-market] DRY RUN — would copy ${sourceDir} → ${join(t.skillsDir, skill.id)}`
+        );
+      }
       return;
     }
 
     const stats = await stat(sourceDir);
     if (!stats.isDirectory()) throw new Error(`Source is not a directory: ${sourceDir}`);
-    await mkdir(targetDir, { recursive: true });
-    // Replace any prior install (keep parent ~/.claude/skills/).
-    await rm(targetDir, { recursive: true, force: true });
-    await cp(sourceDir, targetDir, { recursive: true, force: true });
 
-    const receipt = {
-      installedAt: new Date().toISOString(),
-      skill,
-    };
-    await writeFile(join(targetDir, ".skills-market.json"), JSON.stringify(receipt, null, 2));
+    for (const t of targets) {
+      const targetDir = join(t.skillsDir, skill.id);
+      await mkdir(t.skillsDir, { recursive: true });
+      await rm(targetDir, { recursive: true, force: true });
+      await cp(sourceDir, targetDir, { recursive: true, force: true });
+      const receipt = {
+        installedAt: new Date().toISOString(),
+        target: t.name,
+        skill,
+      };
+      await writeFile(join(targetDir, ".skills-market.json"), JSON.stringify(receipt, null, 2));
+      console.log(`[skills-market]   ✓ ${t.label}: ${targetDir}`);
+    }
   } finally {
     if (cleanup) await cleanup();
   }
@@ -269,13 +342,12 @@ async function installSkill(
       installedAt: new Date().toISOString(),
       source: skill.source,
       install: skill.install,
+      targets: targets.map((t) => t.name),
     };
     if (idx >= 0) manifest.installed[idx] = entry;
     else manifest.installed.push(entry);
     await writeManifest(manifest);
   }
-
-  console.log(`[skills-market] ✓ Installed.`);
 }
 
 async function cmdInstall(args: string[]): Promise<void> {
@@ -316,34 +388,63 @@ async function cmdList(): Promise<void> {
   }
   console.log(`Installed skills (manifest: ${MANIFEST_PATH}):\n`);
   for (const e of manifest.installed) {
-    const here = existsSync(join(CLAUDE_SKILLS_DIR, e.id)) ? "✓" : "✗ missing on disk";
-    console.log(`  ${here}  ${e.id} @ v${e.version}    (installed ${e.installedAt})`);
+    const recorded = (e.targets && e.targets.length ? e.targets : ["claude"]) as TargetName[];
+    const states = recorded.map((n) => {
+      const t = TARGETS[n];
+      return existsSync(join(t.skillsDir, e.id)) ? `✓ ${t.label.toLowerCase().split(" ")[0]}` : `✗ ${t.label.toLowerCase().split(" ")[0]}`;
+    });
+    console.log(`  ${e.id} @ v${e.version}    [${states.join(", ")}]    (installed ${e.installedAt})`);
   }
 }
 
 async function cmdRemove(args: string[]): Promise<void> {
-  const id = args.find((a) => !a.startsWith("--") && a !== "remove");
+  const { common, rest } = parseCommon(args);
+  const id = rest.find((a) => !a.startsWith("--") && a !== "remove");
   if (!id) {
-    console.error("Usage: skills-market remove <skill-id>");
+    console.error("Usage: skills-market remove <skill-id> [--target=claude,codex]");
     process.exit(2);
   }
-  const dryRun = args.includes("--dry-run");
-  const targetDir = join(CLAUDE_SKILLS_DIR, id);
-  if (existsSync(targetDir)) {
-    if (dryRun) console.log(`[skills-market] DRY RUN — would rm -rf ${targetDir}`);
-    else {
-      await rm(targetDir, { recursive: true, force: true });
-      console.log(`[skills-market] Removed ${targetDir}`);
-    }
-  } else {
-    console.log(`[skills-market] Not on disk: ${targetDir}`);
-  }
+  const dryRun = rest.includes("--dry-run");
+  // If user passed --target, only remove from those; otherwise remove from
+  // every target the manifest says it was installed to (fallback: all known).
   const manifest = await readManifest();
-  const before = manifest.installed.length;
-  manifest.installed = manifest.installed.filter((e) => e.id !== id);
-  if (manifest.installed.length !== before && !dryRun) {
-    await writeManifest(manifest);
-    console.log(`[skills-market] Removed ${id} from manifest`);
+  const entry = manifest.installed.find((e) => e.id === id);
+  const recordedTargets = entry?.targets?.length ? entry.targets : ALL_TARGETS;
+  const targets = common.targets ? common.targets.map((n) => TARGETS[n]) : recordedTargets.map((n) => TARGETS[n]);
+
+  for (const t of targets) {
+    const targetDir = join(t.skillsDir, id);
+    if (existsSync(targetDir)) {
+      if (dryRun) console.log(`[skills-market] DRY RUN — would rm -rf ${targetDir}`);
+      else {
+        await rm(targetDir, { recursive: true, force: true });
+        console.log(`[skills-market] Removed ${t.label}: ${targetDir}`);
+      }
+    } else {
+      console.log(`[skills-market] Not on disk (${t.label}): ${targetDir}`);
+    }
+  }
+
+  if (!dryRun) {
+    if (common.targets && entry) {
+      // Targeted removal: keep manifest entry but trim its targets list.
+      const remaining = (entry.targets ?? recordedTargets).filter((n) => !common.targets!.includes(n));
+      if (remaining.length === 0) {
+        manifest.installed = manifest.installed.filter((e) => e.id !== id);
+        console.log(`[skills-market] Removed ${id} from manifest (all targets gone)`);
+      } else {
+        entry.targets = remaining;
+        console.log(`[skills-market] Manifest now records targets: ${remaining.join(", ")}`);
+      }
+      await writeManifest(manifest);
+    } else {
+      const before = manifest.installed.length;
+      manifest.installed = manifest.installed.filter((e) => e.id !== id);
+      if (manifest.installed.length !== before) {
+        await writeManifest(manifest);
+        console.log(`[skills-market] Removed ${id} from manifest`);
+      }
+    }
   }
 }
 
@@ -357,7 +458,6 @@ async function cmdSync(args: string[]): Promise<void> {
     return;
   }
   const registry = await loadRegistry(common);
-  console.log(`[skills-market] Sync target: ${CLAUDE_SKILLS_DIR}`);
   console.log(`[skills-market] Manifest:    ${MANIFEST_PATH} (${manifest.installed.length} skills)`);
   let installed = 0;
   let skipped = 0;
@@ -369,8 +469,11 @@ async function cmdSync(args: string[]): Promise<void> {
       skipped++;
       continue;
     }
+    // Use the manifest's recorded targets so reinstall mirrors the original
+    // setup; user-supplied --target on `sync` overrides that.
+    const perEntryTargets = common.targets ?? (entry.targets && entry.targets.length ? entry.targets : null);
     try {
-      await installSkill(skill, { ...common, dryRun, noTrack: true });
+      await installSkill(skill, { ...common, targets: perEntryTargets, dryRun, noTrack: true });
       installed++;
     } catch (err: any) {
       console.error(`  ✗ ${entry.id}: ${err.message ?? err}`);

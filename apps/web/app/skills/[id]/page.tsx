@@ -47,15 +47,15 @@ export default async function SkillDetailPage({ params }: Props) {
           <CopyButton text={cliCmd} />
         </div>
         <p className="muted small">
-          One-time setup:{" "}
+          Auto-installs into every agent home that exists on your machine
+          (<code>~/.claude/skills/</code> for Claude Code,{" "}
+          <code>~/.codex/skills/</code> for Codex CLI). Pin one with
+          {" "}
+          <code>--target=claude</code> or <code>--target=codex</code>.
+          {" "}
           <a href={`${repoUrl}#install-the-cli`} target="_blank" rel="noreferrer">
-            git clone &amp; npm link
+            CLI setup ↗
           </a>
-          . Or use the{" "}
-          <a href={`${repoUrl}#from-claude-code-skills`} target="_blank" rel="noreferrer">
-            MCP server
-          </a>{" "}
-          from inside Claude Code.
         </p>
       </section>
 
