@@ -7,7 +7,7 @@
     "name": "Vincent Cheng",
     "email": "nx_meteor@163.com"
   },
-  "updatedAt": "2026-05-02T00:00:00Z",
+  "updatedAt": "2026-05-02T14:58:31.975Z",
   "skills": [
     {
       "id": "design-critic",
@@ -141,6 +141,36 @@
       "homepage": "https://github.com/Equality-Machine/skills-market",
       "license": "MIT",
       "createdAt": "2026-02-10T00:00:00Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "linear-issue-executor",
+      "name": "linear-issue-executor",
+      "displayName": "linear-issue-executor",
+      "description": "Execute an Efflora Linear issue end to end through the `linear` CLI and the local repo workflow after the user explicitly instructs work on a specific issue such as AS-123. Use when Codex needs to autonomously carry an issue from readiness check through implementation, verification, PR creation, independent review, acceptance evaluation, and handoff to `inreview`. Do not use for backlog planning, issue creation without execution intent, or unattended polling.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Mel0day",
+        "email": "nx_meteor@163.com"
+      },
+      "category": "other",
+      "tags": [],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/linear-issue-executor",
+        "command": "npx -y skills-market install linear-issue-executor"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/linear-issue-executor"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-02T14:58:31.975Z",
       "downloads": 0,
       "verified": false
     },
