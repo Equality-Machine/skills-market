@@ -554,6 +554,38 @@ function detectWorkingCopy(): string | null {
   return null;
 }
 
+/**
+ * After a successful direct push to main, fast-forward any local clones the
+ * CLI knows about so the user sees their freshly-published skill in the very
+ * next `skills-market catalog` / `search` invocation.
+ *
+ * Only does `git pull --ff-only` (no rebuild). If the user's working copy
+ * also picked up unrelated commits that touch the CLI itself, the next
+ * `skills-market update` will rebuild dist anyway.
+ */
+async function refreshLocalCatalog(): Promise<void> {
+  const places: Array<{ path: string; label: string }> = [];
+  const wc = detectWorkingCopy();
+  if (wc) places.push({ path: wc, label: "working copy" });
+  if (existsSync(MIRROR_DIR)) places.push({ path: MIRROR_DIR, label: "mirror" });
+  if (places.length === 0) {
+    console.log(
+      `[skills-market] (No local catalog found to refresh — skipping. Pass \`skills-market update\` later if you want to see new skills.)`
+    );
+    return;
+  }
+  for (const p of places) {
+    const r = await run("git", ["pull", "--ff-only", "--quiet"], p.path);
+    if (r.code === 0) {
+      console.log(`[skills-market] ✓ Local catalog refreshed (${p.label}: ${p.path})`);
+    } else {
+      console.log(
+        `[skills-market] Couldn't refresh ${p.label} at ${p.path} — run \`skills-market update\` to retry.`
+      );
+    }
+  }
+}
+
 function diffSkills(before: SkillEntry[], after: SkillEntry[]): { added: SkillEntry[]; removed: SkillEntry[]; updated: { from: SkillEntry; to: SkillEntry }[] } {
   const beforeMap = new Map(before.map((s) => [s.id, s]));
   const afterMap = new Map(after.map((s) => [s.id, s]));
@@ -1045,6 +1077,7 @@ async function cmdPublish(args: string[]): Promise<void> {
         const sha = (await run("git", ["rev-parse", "--short", "HEAD"], scratch)).stdout.trim();
         console.log(`[skills-market] ✓ Pushed directly to origin/main`);
         console.log(`https://github.com/${repoFull}/commit/${sha}`);
+        await refreshLocalCatalog();
         console.log(
           `[skills-market] The skill is live. Anyone can install it now with: skills-market install ${meta.id}`
         );
