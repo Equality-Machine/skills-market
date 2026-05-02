@@ -1,0 +1,14 @@
+{
+  "id": "e2e-publish-proof",
+  "displayName": "e2e-publish-proof",
+  "description": "Throwaway skill written to prove `skills-market publish` actually opens a PR. Will be closed immediately.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Mel0day",
+    "email": "nx_meteor@163.com"
+  },
+  "category": "other",
+  "tags": [],
+  "license": "MIT",
+  "createdAt": "2026-05-02T14:37:50.275Z"
+}
