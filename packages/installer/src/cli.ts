@@ -64,6 +64,7 @@ Usage:
 
 Commands:
   install <id>          Install a skill into ~/.claude/skills/<id>/
+  update                Pull latest catalog (git pull) and report new skills
   list                  List skills tracked in the personal manifest
   remove <id>           Uninstall a skill
   sync                  Reinstall every skill in the personal manifest
@@ -431,6 +432,122 @@ async function cmdMirror(args: string[]): Promise<void> {
   process.exit(2);
 }
 
+function detectWorkingCopy(): string | null {
+  // CLI lives at <repo>/packages/installer/dist/cli.js when installed via `npm link`
+  // from a clone. Walk three levels up and check for a .git directory.
+  const candidate = resolve(HERE, "..", "..", "..");
+  if (existsSync(join(candidate, ".git"))) return candidate;
+  return null;
+}
+
+function diffSkills(before: SkillEntry[], after: SkillEntry[]): { added: SkillEntry[]; removed: SkillEntry[]; updated: { from: SkillEntry; to: SkillEntry }[] } {
+  const beforeMap = new Map(before.map((s) => [s.id, s]));
+  const afterMap = new Map(after.map((s) => [s.id, s]));
+  const added: SkillEntry[] = [];
+  const removed: SkillEntry[] = [];
+  const updated: { from: SkillEntry; to: SkillEntry }[] = [];
+  for (const s of after) {
+    const prev = beforeMap.get(s.id);
+    if (!prev) added.push(s);
+    else if (prev.version !== s.version) updated.push({ from: prev, to: s });
+  }
+  for (const s of before) {
+    if (!afterMap.has(s.id)) removed.push(s);
+  }
+  return { added, removed, updated };
+}
+
+async function cmdUpdate(args: string[]): Promise<void> {
+  const { common } = parseCommon(args);
+  const dryRun = args.includes("--dry-run");
+
+  let beforeRegistry: { skills: SkillEntry[] };
+  try {
+    beforeRegistry = await loadRegistry(common);
+  } catch {
+    beforeRegistry = { skills: [] };
+  }
+
+  const workingCopy = detectWorkingCopy();
+  let updated = false;
+
+  if (workingCopy) {
+    console.log(`[skills-market] git pull on working copy: ${workingCopy}`);
+    if (dryRun) {
+      console.log("[skills-market] DRY RUN — would `git pull --ff-only`");
+    } else {
+      const r = await run("git", ["pull", "--ff-only"], workingCopy);
+      if (r.stdout) process.stdout.write(r.stdout);
+      if (r.stderr) process.stderr.write(r.stderr);
+      if (r.code !== 0) {
+        console.error(`[skills-market] git pull failed (exit ${r.code}). Resolve and retry.`);
+        process.exit(r.code);
+      }
+      updated = true;
+    }
+  }
+
+  if (!updated && existsSync(MIRROR_DIR)) {
+    console.log(`[skills-market] git pull on mirror: ${MIRROR_DIR}`);
+    if (!dryRun) {
+      const r = await run("git", ["pull", "--ff-only"], MIRROR_DIR);
+      if (r.stdout) process.stdout.write(r.stdout);
+      if (r.stderr) process.stderr.write(r.stderr);
+      if (r.code !== 0) process.exit(r.code);
+      updated = true;
+    }
+  }
+
+  if (!updated) {
+    // No working copy and no mirror — fetch the registry into a cache so
+    // subsequent calls can still see it.
+    const url = common.registryUrl ?? DEFAULT_REGISTRY_URL;
+    console.log(`[skills-market] No working copy or mirror — fetching ${url}`);
+    if (!dryRun) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const text = await res.text();
+      const cachePath = join(SKILLS_MARKET_HOME, "cache", "skills.json");
+      await mkdir(dirname(cachePath), { recursive: true });
+      await writeFile(cachePath, text, "utf-8");
+      console.log(`[skills-market] Cached registry → ${cachePath}`);
+      console.log(`[skills-market] Tip: pass --registry-path ${cachePath} or set SKILLS_MARKET_REGISTRY_PATH to use it.`);
+    }
+  }
+
+  let afterRegistry: { skills: SkillEntry[] };
+  try {
+    afterRegistry = await loadRegistry(common);
+  } catch {
+    afterRegistry = beforeRegistry;
+  }
+
+  const { added, removed, updated: bumped } = diffSkills(beforeRegistry.skills, afterRegistry.skills);
+  if (!added.length && !removed.length && !bumped.length) {
+    console.log(`\n[skills-market] No catalog changes. (${afterRegistry.skills.length} skill${afterRegistry.skills.length !== 1 ? "s" : ""})`);
+    return;
+  }
+
+  if (added.length) {
+    console.log(`\nNew skills (${added.length}):`);
+    for (const s of added) {
+      console.log(`  + ${s.id.padEnd(20)} v${s.version}  [${s.category}]`);
+      console.log(`      ${s.description}`);
+    }
+  }
+  if (bumped.length) {
+    console.log(`\nVersion bumps (${bumped.length}):`);
+    for (const { from, to } of bumped) {
+      console.log(`  * ${to.id.padEnd(20)} v${from.version} → v${to.version}`);
+    }
+  }
+  if (removed.length) {
+    console.log(`\nRemoved (${removed.length}):`);
+    for (const s of removed) console.log(`  - ${s.id}`);
+  }
+  console.log(`\nNext: \`skills-market install <id>\` to add a new skill, or \`skills-market sync\` to apply version bumps to already-installed skills.`);
+}
+
 async function cmdSearch(args: string[]): Promise<void> {
   const { common, rest } = parseCommon(args);
   const query = rest.find((a) => !a.startsWith("--") && a !== "search");
@@ -482,6 +599,10 @@ async function main() {
       return cmdRemove(rest);
     case "sync":
       return cmdSync(rest);
+    case "update":
+    case "pull":
+    case "refresh":
+      return cmdUpdate(rest);
     case "mirror":
       return cmdMirror(rest);
     case "search":

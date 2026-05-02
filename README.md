@@ -80,6 +80,7 @@ To uninstall: `npm --workspace packages/installer unlink`.
 
 ```bash
 skills-market install <id>          # install a skill into ~/.claude/skills/<id>/
+skills-market update                # git pull latest catalog and show what's new
 skills-market list                  # list skills tracked in your manifest
 skills-market remove <id>           # uninstall a skill
 skills-market sync                  # reinstall everything in the manifest
@@ -89,6 +90,19 @@ skills-market mirror status
 skills-market search <query>        # full-text search the catalog
 skills-market catalog               # list the full catalog
 ```
+
+### See what other people have published
+
+```bash
+skills-market update      # pulls main, prints "New skills (N):" for anything added since last update
+skills-market catalog     # full catalog after the update
+skills-market install <id>
+```
+
+`update` works no matter how you installed the CLI: if you cloned the repo
+(the recommended path), it `git pull`s your working copy; if you set up a
+mirror with `mirror init`, it pulls the mirror; otherwise it falls back to
+fetching `registry/skills.json` from GitHub into a local cache.
 
 `install` resolves the source in this order:
 

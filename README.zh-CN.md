@@ -78,6 +78,7 @@ npm --workspace packages/installer link
 
 ```bash
 skills-market install <id>          # 安装 skill 到 ~/.claude/skills/<id>/
+skills-market update                # git pull 最新 catalog 并显示新增的 skill
 skills-market list                  # 列出 manifest 里的已装 skill
 skills-market remove <id>           # 卸载某个 skill
 skills-market sync                  # 重装 manifest 里的所有 skill
@@ -87,6 +88,18 @@ skills-market mirror status
 skills-market search <关键词>        # 全文搜索 catalog
 skills-market catalog               # 列出整个 catalog
 ```
+
+### 看别人发布的新 skill（同步上游）
+
+```bash
+skills-market update      # git pull 上游，自动列出"New skills (N):"
+skills-market catalog     # 看更新后的完整 catalog
+skills-market install <id>
+```
+
+`update` 会按你的 CLI 安装方式自动选择路径：clone + npm link 模式下
+`git pull` 你的工作副本；如果你跑过 `mirror init` 则 pull 镜像；都没有时
+回落到从 GitHub fetch `registry/skills.json` 到本地 cache。
 
 `install` 会按以下顺序解析 skill 来源：
 
