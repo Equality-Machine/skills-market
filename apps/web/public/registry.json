@@ -7,7 +7,7 @@
     "name": "Vincent Cheng",
     "email": "nx_meteor@163.com"
   },
-  "updatedAt": "2026-05-01T00:00:00Z",
+  "updatedAt": "2026-05-02T00:00:00Z",
   "skills": [
     {
       "id": "design-critic",
@@ -141,6 +141,41 @@
       "homepage": "https://github.com/Equality-Machine/skills-market",
       "license": "MIT",
       "createdAt": "2026-02-10T00:00:00Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "regex-explainer",
+      "name": "regex-explainer",
+      "displayName": "Regex Explainer",
+      "description": "Breaks down regular expressions into plain-English, token by token, and flags common pitfalls like greedy quantifiers and unanchored patterns.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Lindsey",
+        "email": "lindsey.hanglow@up.ac.th"
+      },
+      "category": "development",
+      "tags": [
+        "regex",
+        "explain",
+        "learning"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/regex-explainer",
+        "command": "npx -y skills-market install regex-explainer"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/regex-explainer"
+      },
+      "homepage": "https://github.com/Mel0day/skills-market",
+      "license": "MIT",
+      "createdAt": "2026-05-02T00:00:00Z",
       "downloads": 0,
       "verified": false
     },

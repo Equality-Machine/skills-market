@@ -1,14 +1,16 @@
 "use client";
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { Skill, SkillRegistry } from "@skills-market/registry";
 
 export default function BrowseClient({ registry }: { registry: SkillRegistry }) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const categories = useMemo(() => {
-    return Array.from(new Set(registry.skills.map((s) => s.category))).sort();
-  }, [registry]);
+  const categories = useMemo(
+    () => Array.from(new Set(registry.skills.map((s) => s.category))).sort(),
+    [registry]
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -27,36 +29,45 @@ export default function BrowseClient({ registry }: { registry: SkillRegistry }) 
       <div className="search">
         <input
           type="search"
-          placeholder="Search skills (e.g. git, design, kubernetes)…"
+          placeholder="Search skills"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search skills"
         />
+        <span className="search-count">
+          {filtered.length} of {registry.skills.length}
+        </span>
       </div>
       <div className="chips">
-        <span
+        <button
           className={`chip ${activeCategory === null ? "active" : ""}`}
           onClick={() => setActiveCategory(null)}
+          type="button"
         >
           all
-        </span>
+        </button>
         {categories.map((c) => (
-          <span
+          <button
             key={c}
             className={`chip ${activeCategory === c ? "active" : ""}`}
             onClick={() => setActiveCategory(c)}
+            type="button"
           >
             {c}
-          </span>
+          </button>
         ))}
       </div>
 
-      <div className="grid">
-        {filtered.map((s) => (
-          <SkillCard key={s.id} skill={s} />
-        ))}
-      </div>
-      {filtered.length === 0 && (
-        <p style={{ color: "var(--muted)", marginTop: 24 }}>No skills match your search.</p>
+      {filtered.length > 0 ? (
+        <ul className="grid">
+          {filtered.map((s) => (
+            <li key={s.id}>
+              <SkillCard skill={s} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="empty">No skills match your search.</p>
       )}
     </>
   );
@@ -64,20 +75,20 @@ export default function BrowseClient({ registry }: { registry: SkillRegistry }) 
 
 function SkillCard({ skill }: { skill: Skill }) {
   return (
-    <a className="card" href={`/skills/${skill.id}`}>
-      <div className="title">
+    <Link className="card" href={`/skills/${skill.id}`}>
+      <div className="card-head">
         <h3>{skill.displayName ?? skill.name}</h3>
-        {skill.verified && <span className="verified">✓ verified</span>}
+        {skill.verified && (
+          <span className="verified" title="Maintainer-reviewed">
+            ✓
+          </span>
+        )}
       </div>
-      <div className="desc">{skill.description}</div>
+      <p className="desc">{skill.description}</p>
       <div className="meta">
         <span className="tag">{skill.category}</span>
-        <span>v{skill.version}</span>
-        <span>· {skill.downloads} installs</span>
+        <span className="muted">v{skill.version}</span>
       </div>
-      <div className="install">
-        <code>{skill.install.command ?? `npx -y skills-market install ${skill.id}`}</code>
-      </div>
-    </a>
+    </Link>
   );
 }

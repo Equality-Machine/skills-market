@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getRegistry } from "../../lib/registry";
 import CopyButton from "./copy-button";
 
@@ -16,62 +17,109 @@ export default async function SkillDetailPage({ params }: Props) {
   const skill = registry.skills.find((s) => s.id === params.id);
   if (!skill) return notFound();
 
-  const installCmd = skill.install.command ?? `npx -y skills-market install ${skill.id}`;
+  const cliCmd = `skills-market install ${skill.id}`;
+  const repoUrl = "https://github.com/Equality-Machine/skills-market";
 
   return (
-    <section className="detail">
-      <a className="back" href="/">← Back to catalog</a>
-      <h1>{skill.displayName ?? skill.name} {skill.verified && <span style={{ color: "var(--good)", fontSize: 14, marginLeft: 8 }}>✓ verified</span>}</h1>
-      <p className="lede">{skill.description}</p>
+    <article className="detail">
+      <Link className="back" href="/">
+        ← All skills
+      </Link>
 
-      <div className="row">
-        <div>
-          <strong>Version</strong>
-          <div>v{skill.version}</div>
+      <header className="detail-head">
+        <div className="detail-title">
+          <h1>{skill.displayName ?? skill.name}</h1>
+          {skill.verified && (
+            <span className="verified" title="Maintainer-reviewed">
+              ✓ verified
+            </span>
+          )}
         </div>
-        <div>
-          <strong>Author</strong>
-          <div>{skill.author.name}</div>
-        </div>
-        <div>
-          <strong>Category</strong>
-          <div>{skill.category}</div>
-        </div>
-        <div>
-          <strong>License</strong>
-          <div>{skill.license ?? "n/a"}</div>
-        </div>
-        <div>
-          <strong>Installs</strong>
-          <div>{skill.downloads}</div>
-        </div>
-      </div>
+        <p className="lede">{skill.description}</p>
+      </header>
 
-      <h2>Install via NPX</h2>
-      <div className="install-block">
-        <pre><code>{installCmd}</code></pre>
-        <CopyButton text={installCmd} />
-      </div>
-
-      <h2>Install via Claude Code MCP</h2>
-      <p>
-        After registering the skills-market MCP server in Claude Code, type <code>@skills</code> and select{" "}
-        <code>{skill.id}</code>, or run:
-      </p>
-      <pre><code>{`{ "tool": "install_skill", "arguments": { "id": "${skill.id}", "confirm": true } }`}</code></pre>
-
-      <h2>Tags</h2>
-      <div className="chips">
-        {skill.tags.map((t) => (
-          <span className="chip" key={t}>{t}</span>
-        ))}
-      </div>
-
-      {skill.homepage && (
-        <p style={{ marginTop: 24 }}>
-          <a href={skill.homepage} target="_blank" rel="noreferrer">Homepage →</a>
+      <section>
+        <h2>Install</h2>
+        <div className="install-block">
+          <pre>
+            <code>{cliCmd}</code>
+          </pre>
+          <CopyButton text={cliCmd} />
+        </div>
+        <p className="muted small">
+          One-time setup:{" "}
+          <a href={`${repoUrl}#install-the-cli`} target="_blank" rel="noreferrer">
+            git clone &amp; npm link
+          </a>
+          . Or use the{" "}
+          <a href={`${repoUrl}#from-claude-code-skills`} target="_blank" rel="noreferrer">
+            MCP server
+          </a>{" "}
+          from inside Claude Code.
         </p>
+      </section>
+
+      <section>
+        <h2>Details</h2>
+        <dl className="kv">
+          <div>
+            <dt>Version</dt>
+            <dd>v{skill.version}</dd>
+          </div>
+          <div>
+            <dt>Author</dt>
+            <dd>{skill.author.name}</dd>
+          </div>
+          <div>
+            <dt>Category</dt>
+            <dd>{skill.category}</dd>
+          </div>
+          <div>
+            <dt>License</dt>
+            <dd>{skill.license ?? "—"}</dd>
+          </div>
+          <div>
+            <dt>Created</dt>
+            <dd>
+              <time dateTime={skill.createdAt}>{skill.createdAt.slice(0, 10)}</time>
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      {skill.tags?.length > 0 && (
+        <section>
+          <h2>Tags</h2>
+          <div className="chips">
+            {skill.tags.map((t) => (
+              <span className="chip static" key={t}>
+                {t}
+              </span>
+            ))}
+          </div>
+        </section>
       )}
-    </section>
+
+      <section>
+        <h2>Source</h2>
+        <p className="muted">
+          <a
+            href={`${repoUrl}/blob/main/skills/${skill.id}/SKILL.md`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View SKILL.md on GitHub ↗
+          </a>
+          {skill.homepage && (
+            <>
+              {" · "}
+              <a href={skill.homepage} target="_blank" rel="noreferrer">
+                Homepage ↗
+              </a>
+            </>
+          )}
+        </p>
+      </section>
+    </article>
   );
 }

@@ -6,10 +6,10 @@ export default async function HomePage() {
   return (
     <>
       <section className="hero">
-        <h1>Skills for Claude Code, in one place.</h1>
+        <h1>Skills for Claude Code.</h1>
         <p>
-          Browse community skills, copy an NPX install command, or hook this catalog into Claude Code through the
-          skills-market MCP server and discover them with <code>@skills</code>.
+          A community-maintained catalog. Install with one CLI command, or pipe through
+          the MCP server with <code>@skills</code> inside Claude Code.
         </p>
       </section>
       <BrowseClient registry={registry} />

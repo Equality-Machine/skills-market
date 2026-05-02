@@ -1,8 +1,9 @@
 import "./globals.css";
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 export const metadata = {
-  title: "skills-market — Claude Code skills marketplace",
+  title: "skills-market — Claude Code skills",
   description: "An open marketplace for Claude Code skills.",
 };
 
@@ -11,22 +12,42 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <header className="topbar">
-          <a href="/" className="brand">
-            skills-market
-          </a>
-          <nav>
-            <a href="/">Browse</a>
-            <a href="https://github.com/Equality-Machine/skills-market" target="_blank" rel="noreferrer">
-              GitHub
-            </a>
-          </nav>
+          <div className="container topbar-inner">
+            <Link href="/" className="brand">
+              <span className="brand-mark" aria-hidden>
+                ◆
+              </span>
+              <span>skills-market</span>
+            </Link>
+            <nav>
+              <Link href="/">Browse</Link>
+              <a
+                href="https://github.com/Equality-Machine/skills-market"
+                target="_blank"
+                rel="noreferrer"
+              >
+                GitHub ↗
+              </a>
+            </nav>
+          </div>
         </header>
-        <main>{children}</main>
+        <main className="container">{children}</main>
         <footer>
-          <small>
-            Install with <code>npx -y skills-market install &lt;id&gt;</code> or use the MCP server in Claude Code with{" "}
-            <code>@skills</code>.
-          </small>
+          <div className="container">
+            <span className="muted">
+              Install <code>git clone …skills-market</code>
+              {" · "}
+              Update <code>skills-market update</code>
+              {" · "}
+              <a
+                href="https://github.com/Equality-Machine/skills-market/blob/main/CONTRIBUTING.md"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Contribute a skill
+              </a>
+            </span>
+          </div>
         </footer>
       </body>
     </html>
