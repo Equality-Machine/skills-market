@@ -583,14 +583,33 @@ async function cmdUpdate(args: string[]): Promise<void> {
   if (workingCopy) {
     console.log(`[skills-market] git pull on working copy: ${workingCopy}`);
     if (dryRun) {
-      console.log("[skills-market] DRY RUN — would `git pull --ff-only`");
+      console.log("[skills-market] DRY RUN — would `git pull --ff-only` and rebuild");
     } else {
+      const beforeSha = (await run("git", ["rev-parse", "HEAD"], workingCopy)).stdout.trim();
       const r = await run("git", ["pull", "--ff-only"], workingCopy);
       if (r.stdout) process.stdout.write(r.stdout);
       if (r.stderr) process.stderr.write(r.stderr);
       if (r.code !== 0) {
         console.error(`[skills-market] git pull failed (exit ${r.code}). Resolve and retry.`);
         process.exit(r.code);
+      }
+      const afterSha = (await run("git", ["rev-parse", "HEAD"], workingCopy)).stdout.trim();
+      // If anything actually changed, rebuild so the dist that this CLI is run
+      // out of stays in sync with the source. Without this step `update` would
+      // pull new src/ but keep the old compiled CLI in dist/.
+      if (beforeSha !== afterSha) {
+        console.log(`[skills-market] Rebuilding CLI (${beforeSha.slice(0, 7)} → ${afterSha.slice(0, 7)}) …`);
+        const inst = await run("npm", ["install", "--silent", "--no-audit", "--no-fund"], workingCopy);
+        if (inst.code !== 0) {
+          console.warn(`[skills-market] npm install warning: ${inst.stderr.trim()}`);
+        }
+        const build = await run("npm", ["run", "build", "--silent"], workingCopy);
+        if (build.code !== 0) {
+          console.warn(`[skills-market] Rebuild failed (exit ${build.code}). Old CLI may still be in use.`);
+          if (build.stderr) process.stderr.write(build.stderr);
+        } else {
+          console.log(`[skills-market] ✓ Rebuilt`);
+        }
       }
       updated = true;
     }
@@ -856,10 +875,18 @@ async function cmdPublish(args: string[]): Promise<void> {
   const f = parsePublishFlags(args);
   let skillDir = resolve(f.dir ?? ".");
 
+  if (!existsSync(skillDir)) {
+    console.error(`[skills-market] Path not found: ${skillDir}`);
+    console.error(
+      `Tip: pass either a directory containing SKILL.md or a single .md file. Cwd: ${process.cwd()}`
+    );
+    process.exit(1);
+  }
+
   // 0. File-mode: accept a single .md file. Stage it into a sibling directory
   //    so the rest of the flow (which works on directories) is unchanged.
-  const inputStat = existsSync(skillDir) ? await stat(skillDir) : null;
-  if (inputStat?.isFile()) {
+  const inputStat = await stat(skillDir);
+  if (inputStat.isFile()) {
     skillDir = await stageFromMarkdownFile(skillDir, f);
   }
 
