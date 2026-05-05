@@ -1,0 +1,14 @@
+{
+  "id": "zoom-out",
+  "displayName": "zoom-out",
+  "description": "Tell the agent to zoom out and give broader context or a higher-level perspective. Use when you're unfamiliar with a section of code or need to understand how it fits into the bigger picture.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Matt Pocock",
+    "url": "https://github.com/mattpocock/skills"
+  },
+  "category": "development",
+  "tags": ["forked", "upstream:mattpocock/skills"],
+  "license": "MIT",
+  "createdAt": "2026-05-05T10:08:31.806Z"
+}
