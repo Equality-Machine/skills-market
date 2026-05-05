@@ -1,0 +1,17 @@
+{
+  "id": "tdd",
+  "displayName": "tdd",
+  "description": "Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions \"red-green-refactor\", wants integration tests, or asks for test-first development.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Matt Pocock",
+    "url": "https://github.com/mattpocock/skills"
+  },
+  "category": "development",
+  "tags": [
+    "forked",
+    "upstream:mattpocock/skills"
+  ],
+  "license": "MIT",
+  "createdAt": "2026-05-05T10:08:31.806Z"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "triage",
+  "displayName": "triage",
+  "description": "Triage issues through a state machine driven by triage roles. Use when user wants to create an issue, triage issues, review incoming bugs or feature requests, prepare issues for an AFK agent, or manage issue workflow.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Matt Pocock",
+    "url": "https://github.com/mattpocock/skills"
+  },
+  "category": "productivity",
+  "tags": [
+    "forked",
+    "upstream:mattpocock/skills"
+  ],
+  "license": "MIT",
+  "createdAt": "2026-05-05T10:08:31.806Z"
+}

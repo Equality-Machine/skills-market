@@ -1,0 +1,17 @@
+{
+  "id": "diagnose",
+  "displayName": "diagnose",
+  "description": "Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says \"diagnose this\" / \"debug this\", reports a bug, says something is broken/throwing/failing, or describes a performance regression.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Matt Pocock",
+    "url": "https://github.com/mattpocock/skills"
+  },
+  "category": "development",
+  "tags": [
+    "forked",
+    "upstream:mattpocock/skills"
+  ],
+  "license": "MIT",
+  "createdAt": "2026-05-05T10:08:31.806Z"
+}
