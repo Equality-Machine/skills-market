@@ -7,8 +7,71 @@
     "name": "Vincent Cheng",
     "email": "nx_meteor@163.com"
   },
-  "updatedAt": "2026-05-05T10:12:03.608Z",
+  "updatedAt": "2026-05-07T16:45:12.768Z",
   "skills": [
+    {
+      "id": "bp-deck",
+      "name": "bp-deck",
+      "displayName": "bp-deck",
+      "description": "Create clean, minimalist pitch deck / BP slides on white background using pptxgenjs. Use when user asks to make a slide, pitch deck page, BP 页面, 单独写一页, or wants to build presentations in the Efflora-style first-principles design (oversized numbers, single accent color, generous whitespace, no decorative icons). Each slide outputs as standalone .pptx.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Wang Quan",
+        "email": "b4yesc4t@gmail.com"
+      },
+      "category": "other",
+      "tags": [],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/bp-deck",
+        "command": "npx -y skills-market install bp-deck"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/bp-deck"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-07T16:45:12.768Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "caveman",
+      "name": "caveman",
+      "displayName": "caveman",
+      "description": "Ultra-compressed communication mode. Cuts token usage ~75% by dropping filler, articles, and pleasantries while keeping full technical accuracy. Use when user says \"caveman mode\", \"talk like caveman\", \"use caveman\", \"less tokens\", \"be brief\", or invokes /caveman.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "productivity",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/caveman",
+        "command": "npx -y skills-market install caveman"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/caveman"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
     {
       "id": "design-critic",
       "name": "design-critic",
@@ -40,6 +103,39 @@
       "homepage": "https://github.com/Equality-Machine/skills-market",
       "license": "Apache-2.0",
       "createdAt": "2026-03-15T00:00:00Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "diagnose",
+      "name": "diagnose",
+      "displayName": "diagnose",
+      "description": "Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says \"diagnose this\" / \"debug this\", reports a bug, says something is broken/throwing/failing, or describes a performance regression.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "development",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/diagnose",
+        "command": "npx -y skills-market install diagnose"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/diagnose"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
       "downloads": 0,
       "verified": false
     },
@@ -78,6 +174,72 @@
       "verified": false
     },
     {
+      "id": "grill-me",
+      "name": "grill-me",
+      "displayName": "grill-me",
+      "description": "Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get grilled on their design, or mentions \"grill me\".",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "productivity",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/grill-me",
+        "command": "npx -y skills-market install grill-me"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/grill-me"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "grill-with-docs",
+      "name": "grill-with-docs",
+      "displayName": "grill-with-docs",
+      "description": "Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "development",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/grill-with-docs",
+        "command": "npx -y skills-market install grill-with-docs"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/grill-with-docs"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
       "id": "hello-world",
       "name": "hello-world",
       "displayName": "Hello World",
@@ -107,6 +269,39 @@
       },
       "license": "MIT",
       "createdAt": "2026-05-01T00:00:00Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "improve-codebase-architecture",
+      "name": "improve-codebase-architecture",
+      "displayName": "improve-codebase-architecture",
+      "description": "Find deepening opportunities in a codebase, informed by the domain language in CONTEXT.md and the decisions in docs/adr/. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "development",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/improve-codebase-architecture",
+        "command": "npx -y skills-market install improve-codebase-architecture"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/improve-codebase-architecture"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
       "downloads": 0,
       "verified": false
     },
@@ -210,6 +405,138 @@
       "verified": false
     },
     {
+      "id": "setup-matt-pocock-skills",
+      "name": "setup-matt-pocock-skills",
+      "displayName": "setup-matt-pocock-skills",
+      "description": "Sets up an `## Agent skills` block in AGENTS.md/CLAUDE.md and `docs/agents/` so the engineering skills know this repo's issue tracker (GitHub or local markdown), triage label vocabulary, and domain doc layout. Run before first use of `to-issues`, `to-prd`, `triage`, `diagnose`, `tdd`, `improve-codebase-architecture`, or `zoom-out` — or if those skills appear to be missing context about the issue tracker, triage labels, or domain docs.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "productivity",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/setup-matt-pocock-skills",
+        "command": "npx -y skills-market install setup-matt-pocock-skills"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/setup-matt-pocock-skills"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "tdd",
+      "name": "tdd",
+      "displayName": "tdd",
+      "description": "Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions \"red-green-refactor\", wants integration tests, or asks for test-first development.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "development",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/tdd",
+        "command": "npx -y skills-market install tdd"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/tdd"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "to-issues",
+      "name": "to-issues",
+      "displayName": "to-issues",
+      "description": "Break a plan, spec, or PRD into independently-grabbable issues on the project issue tracker using tracer-bullet vertical slices. Use when user wants to convert a plan into issues, create implementation tickets, or break down work into issues.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "productivity",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/to-issues",
+        "command": "npx -y skills-market install to-issues"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/to-issues"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "to-prd",
+      "name": "to-prd",
+      "displayName": "to-prd",
+      "description": "Turn the current conversation context into a PRD and publish it to the project issue tracker. Use when user wants to create a PRD from the current context.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "productivity",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/to-prd",
+        "command": "npx -y skills-market install to-prd"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/to-prd"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
       "id": "translate-cn-en",
       "name": "translate-cn-en",
       "displayName": "中英互译",
@@ -243,6 +570,72 @@
       "verified": false
     },
     {
+      "id": "triage",
+      "name": "triage",
+      "displayName": "triage",
+      "description": "Triage issues through a state machine driven by triage roles. Use when user wants to create an issue, triage issues, review incoming bugs or feature requests, prepare issues for an AFK agent, or manage issue workflow.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "productivity",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/triage",
+        "command": "npx -y skills-market install triage"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/triage"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
+      "id": "write-a-skill",
+      "name": "write-a-skill",
+      "displayName": "write-a-skill",
+      "description": "Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, or build a new skill.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Matt Pocock",
+        "url": "https://github.com/mattpocock/skills"
+      },
+      "category": "productivity",
+      "tags": [
+        "forked",
+        "upstream:mattpocock/skills"
+      ],
+      "install": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/write-a-skill",
+        "command": "npx -y skills-market install write-a-skill"
+      },
+      "source": {
+        "type": "git-subdir",
+        "repo": "https://github.com/Equality-Machine/skills-market.git",
+        "ref": "main",
+        "path": "skills/write-a-skill"
+      },
+      "license": "MIT",
+      "createdAt": "2026-05-05T10:08:31.806Z",
+      "downloads": 0,
+      "verified": false
+    },
+    {
       "id": "zoom-out",
       "name": "zoom-out",
       "displayName": "zoom-out",
@@ -270,391 +663,6 @@
         "ref": "main",
         "path": "skills/zoom-out"
       },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "diagnose",
-      "name": "diagnose",
-      "displayName": "diagnose",
-      "description": "Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says \"diagnose this\" / \"debug this\", reports a bug, says something is broken/throwing/failing, or describes a performance regression.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "development",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "debugging"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/diagnose",
-        "command": "npx -y skills-market install diagnose"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/diagnose"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "grill-with-docs",
-      "name": "grill-with-docs",
-      "displayName": "grill-with-docs",
-      "description": "Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "development",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "design-review"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/grill-with-docs",
-        "command": "npx -y skills-market install grill-with-docs"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/grill-with-docs"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "improve-codebase-architecture",
-      "name": "improve-codebase-architecture",
-      "displayName": "improve-codebase-architecture",
-      "description": "Find deepening opportunities in a codebase, informed by the domain language in CONTEXT.md and the decisions in docs/adr/. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "development",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "refactoring"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/improve-codebase-architecture",
-        "command": "npx -y skills-market install improve-codebase-architecture"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/improve-codebase-architecture"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "setup-matt-pocock-skills",
-      "name": "setup-matt-pocock-skills",
-      "displayName": "setup-matt-pocock-skills",
-      "description": "Sets up an `## Agent skills` block in AGENTS.md/CLAUDE.md and `docs/agents/` so the engineering skills know this repo's issue tracker (GitHub or local markdown), triage label vocabulary, and domain doc layout. Run before first use of `to-issues`, `to-prd`, `triage`, `diagnose`, `tdd`, `improve-codebase-architecture`, or `zoom-out` — or if those skills appear to be missing context about the issue tracker, triage labels, or domain docs.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "productivity",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "config"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/setup-matt-pocock-skills",
-        "command": "npx -y skills-market install setup-matt-pocock-skills"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/setup-matt-pocock-skills"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "tdd",
-      "name": "tdd",
-      "displayName": "tdd",
-      "description": "Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions \"red-green-refactor\", wants integration tests, or asks for test-first development.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "development",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "testing"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/tdd",
-        "command": "npx -y skills-market install tdd"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/tdd"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "to-issues",
-      "name": "to-issues",
-      "displayName": "to-issues",
-      "description": "Break a plan, spec, or PRD into independently-grabbable issues on the project issue tracker using tracer-bullet vertical slices. Use when user wants to convert a plan into issues, create implementation tickets, or break down work into issues.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "productivity",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "issues"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/to-issues",
-        "command": "npx -y skills-market install to-issues"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/to-issues"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "to-prd",
-      "name": "to-prd",
-      "displayName": "to-prd",
-      "description": "Turn the current conversation context into a PRD and publish it to the project issue tracker. Use when user wants to create a PRD from the current context.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "productivity",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "prd"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/to-prd",
-        "command": "npx -y skills-market install to-prd"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/to-prd"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "triage",
-      "name": "triage",
-      "displayName": "triage",
-      "description": "Triage issues through a state machine driven by triage roles. Use when user wants to create an issue, triage issues, review incoming bugs or feature requests, prepare issues for an AFK agent, or manage issue workflow.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "productivity",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "issues"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/triage",
-        "command": "npx -y skills-market install triage"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/triage"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "caveman",
-      "name": "caveman",
-      "displayName": "caveman",
-      "description": "Ultra-compressed communication mode. Cuts token usage ~75% by dropping filler, articles, and pleasantries while keeping full technical accuracy. Use when user says \"caveman mode\", \"talk like caveman\", \"use caveman\", \"less tokens\", \"be brief\", or invokes /caveman.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "productivity",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/caveman",
-        "command": "npx -y skills-market install caveman"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/caveman"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "grill-me",
-      "name": "grill-me",
-      "displayName": "grill-me",
-      "description": "Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get grilled on their design, or mentions \"grill me\".",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "productivity",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "design-review"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/grill-me",
-        "command": "npx -y skills-market install grill-me"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/grill-me"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
-      "license": "MIT",
-      "createdAt": "2026-05-05T10:08:31.806Z",
-      "downloads": 0,
-      "verified": false
-    },
-    {
-      "id": "write-a-skill",
-      "name": "write-a-skill",
-      "displayName": "write-a-skill",
-      "description": "Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, or build a new skill.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Matt Pocock",
-        "url": "https://github.com/mattpocock/skills"
-      },
-      "category": "productivity",
-      "tags": [
-        "forked",
-        "upstream:mattpocock/skills",
-        "skill-authoring"
-      ],
-      "install": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/write-a-skill",
-        "command": "npx -y skills-market install write-a-skill"
-      },
-      "source": {
-        "type": "git-subdir",
-        "repo": "https://github.com/Equality-Machine/skills-market.git",
-        "ref": "main",
-        "path": "skills/write-a-skill"
-      },
-      "homepage": "https://github.com/mattpocock/skills",
       "license": "MIT",
       "createdAt": "2026-05-05T10:08:31.806Z",
       "downloads": 0,

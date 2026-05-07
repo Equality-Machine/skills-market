@@ -1,0 +1,14 @@
+{
+  "id": "bp-deck",
+  "displayName": "bp-deck",
+  "description": "Create clean, minimalist pitch deck / BP slides on white background using pptxgenjs. Use when user asks to make a slide, pitch deck page, BP 页面, 单独写一页, or wants to build presentations in the Efflora-style first-principles design (oversized numbers, single accent color, generous whitespace, no decorative icons). Each slide outputs as standalone .pptx.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Wang Quan",
+    "email": "b4yesc4t@gmail.com"
+  },
+  "category": "other",
+  "tags": [],
+  "license": "MIT",
+  "createdAt": "2026-05-07T16:45:12.768Z"
+}
