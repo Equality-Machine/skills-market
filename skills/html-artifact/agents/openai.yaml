@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML Artifact"
+  short_description: "Turn complex agent output into readable self-contained HTML"
+  default_prompt: "Use /html to turn the current complex output into a self-contained, reading-first HTML artifact with optional Markdown export."

@@ -1,0 +1,13 @@
+{
+  "id": "html-artifact",
+  "displayName": "html-artifact",
+  "description": "Generate self-contained, reading-first HTML artifacts from already-produced complex agent output. Use when the user invokes /html, asks to turn a plan, research summary, comparison, code review, decision tree, long explanation, or other complex Human-Agent output into human-friendly HTML, or when the agent suggested an HTML artifact and the user confirmed. Do not use for building full web apps or for doing the upstream research, planning, or analysis itself.",
+  "version": "0.1.0",
+  "author": {
+    "name": "efflora"
+  },
+  "category": "other",
+  "tags": [],
+  "license": "MIT",
+  "createdAt": "2026-05-14T07:29:13.399Z"
+}
