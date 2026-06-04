@@ -1,0 +1,12 @@
+{
+  "id": "skill-forge",
+  "display": "skill-forge",
+  "description": "Self-improving meta-agent: discovers, devours, and creates AI agent skills. 14 behavioral skills covering debugging, architecture, performance, resilience, git workflow, MCP orchestration, and more. Autonomous discovery engine with RL-weighted learning.",
+  "category": "development",
+  "version": "1.1.0",
+  "author": "Adit Jain",
+  "email": "aditjain2005@gmail.com",
+  "license": "MIT",
+  "tags": ["meta-agent", "self-improving", "discovery", "behavioral-skills", "mcp", "cursor", "claude-code"],
+  "repo": "https://github.com/Adit-Jain-srm/skill-forge"
+}
